@@ -46,8 +46,8 @@ add eax, ebx
 1. [툴링](#1-_툴링)
 2. [미지원 문법](#2-_미지원_문법)
 3. [`arguments` 관리](#3-_arguments_관리)
-4. switch-case
-5. for-in
+4. [switch-case](#4-_switch-case)
+5. [for-in](#5-_for-in)
 
 
 ### 1. 툴링

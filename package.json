@@ -1,11 +1,16 @@
 {
   "name": "hexo-site",
-  "version": "2.8.3",
+  "version": "3.0.0-beta.2",
   "private": true,
   "dependencies": {
+    "hexo-generator-archive": "*",
+    "hexo-generator-category": "*",
+    "hexo-generator-feed": "beta",
+    "hexo-generator-index": "*",
+    "hexo-generator-tag": "*",
     "hexo-renderer-ejs": "*",
-    "hexo-generator-feed": "*",
-    "hexo-renderer-marked": "^0.1.0",
-    "hexo-renderer-stylus": "*"
+    "hexo-renderer-marked": "beta",
+    "hexo-renderer-stylus": "*",
+    "hexo-server": "0.0.4"
   }
 }

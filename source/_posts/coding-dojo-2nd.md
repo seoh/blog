@@ -1,4 +1,4 @@
-title: "coding-dojo-2nd"
+title: "Coding Dojo #1 후기"
 date: 2014-08-09
 tags:
 - swift

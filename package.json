@@ -9,6 +9,7 @@
     "hexo-generator-index": "*",
     "hexo-generator-tag": "*",
     "hexo-renderer-ejs": "*",
+    "hexo-renderer-jade": "^0.1.0",
     "hexo-renderer-marked": "beta",
     "hexo-renderer-stylus": "*",
     "hexo-server": "0.0.4"

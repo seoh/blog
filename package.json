@@ -3,6 +3,7 @@
   "version": "3.0.0-beta.2",
   "private": true,
   "dependencies": {
+    "hexo-deployer-git": "0.0.2",
     "hexo-generator-archive": "*",
     "hexo-generator-category": "*",
     "hexo-generator-feed": "beta",

@@ -273,4 +273,5 @@ console.log(parsedTemplate);
 > jQuery와 underscore를 함께
 
 jQuery와 underscore는 상호보완적인 것이라 함께 쓰면 더 좋다. 자, jQuery는 아주 괜찮은 케이스들도 있다. DOM을 다룬다거나 애니메이션같은 것들이 말이다. 하지만 더 고수준이나 저수준을 다루지는 않는다. 고수준 이슈를 다루는 Backbone이나 Knockout같은 프레임웍이라면 필요한 부분에 전부 끼워넣을 수 있다.
+
 좀 더 넓게 보자면, jQuery는 DOM을 다루는 기능 때문에 브라우저 밖에서는 거의 쓸 일이 없다. 다른 면으로 underscore는 브라우져에서도 사용할 수 있고 server단에서도 별 이슈없이 사용할 수 있다. 사실, underscore는 node module들이 제일 많이 의존하고 있다. 지금 말한건 그렇다. underscore의 활용에 대해서는 겉만 살짝 긁은 정도다.

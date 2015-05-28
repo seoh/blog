@@ -7,7 +7,7 @@ tags:
 
 > 이런 테크닉들을 익혔을 때의 좋은 부가효과는, 사용하는 **모든** 언어에서 더 좋은 개발자가 된다는 것이다. 나는 스칼라와 자바스크립트 모두에서 클로저나 다른 테크닉들을 익히는데 정말 도움이 됐고 더 좋은 자바스크립트 프로그래머가 되었다.
 > 
-> <p class="right">[스칼라로의 전환][transition]에서</p>
+> [스칼라로의 전환][transition]에서
 
 스칼라를 도전해본 것은 이번이 처음이 아니다. 함수형에 대해 이름만 알던 차에 [자바 개발자를 위한 함수형 프로그래밍][func-java]를 읽고 함수형이라는 개념을 더 배우고 싶어했고, 코세라(Coursera)에 가입하게 된 계기이자 처음으로(그리고 현재로서는 마지막으로) 수료한 [스칼라로 배우는 함수형 프로그래밍 기초][progfun]로 함수형이라는 패러다임을 잠깐 맛보았다. 그리고 1년 정도 손을 놓았다가 [리액티브 프로그래밍 기초][reactive]에 다시 도전했다가 영어 실력의 한계와 스칼라의 이해가 부족했다라는 점만 뼈저리게 깨닫고 중도포기를 했다. 그리고 [쉽게 배워서 빨리 써먹는 스칼라 프로그래밍][impatient]를 통해 문법은 리뷰할 수 있었지만 언어 자체와 함수형에 대한 이해도가 좋아지진 않았다. 
 
@@ -86,7 +86,7 @@ libraryDependencies ++= Seq(
 > 
 > - 최소 다섯가지 프로그래밍 언어를 배워라. class abstractions (자바 또는 C++) 지원하는 언어, coroutines을 (Icon 또는 Scheme) 지원하는 언어, functional abstraction (Lisp 또는 ML) 지원하는 언어, syntactic abstraction (Lisp) 지원하는 언어, declarative specifications를 (Prolog또는 C++ 템플렛) 지원하는 언어, 그리고 parallelism을 (Sisal) 지원하는 언어를 한개씩 배워라.
 > 
-> <p class="right">[프로그래밍 10년 완성][21days]([번역][21days-kr])에서</p>
+> [프로그래밍 10년 완성][21days]([번역][21days-kr])에서
 
 
 ---
@@ -97,6 +97,7 @@ libraryDependencies ++= Seq(
 
 
 <!-- reference and style -->
+
 [transition]: https://medium.com/@kvnwbbr/transitioning-to-scala-d1818f25b2b7 "Transitioning to Scala"
 [func-java]: http://www.hanbit.co.kr/ebook/look.html?isbn=9788979149678 "Functional Programming for Java Developers"
 [progfun]: https://www.coursera.org/course/progfun "Functional Programming Principles in Scala"
@@ -119,5 +120,6 @@ libraryDependencies ++= Seq(
 
 
 <style type="text/css">
-.right { text-align: right; }
+blockquote p:first-child { text-align: initial !important; }
+blockquote p:last-child { text-align: right; }
 </style>

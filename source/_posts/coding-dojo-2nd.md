@@ -1,4 +1,4 @@
-title: "Coding Dojo #1 후기"
+title: "Coding Dojo #2 후기"
 date: 2014-08-09
 tags:
 - swift
@@ -10,7 +10,8 @@ tags:
 # 1. 스코프 내의 변수 잡기
 
 > 클로저는 사용자의 코드 안에서 전달되거나 사용할 수 있는 기능을 포함한 독립적인 블록(block)입니다. Swift에서의 클로저는 C 및 Objective-C 의 blocks와 유사하며, 다른 언어의 람다(lambda)와도 유사합니다. 클로저는 자신이 정의된 컨텍스트(context)로부터 임의의 상수 및 변수의 참조(reference)를 획득(capture)하고 저장할 수 있습니다.
-<p class="right">[09 클로저 (Closures) by inureyes](http://seoh.github.io/Swift-Korean/#09-closures-)</p>
+> 
+> [09 클로저 (Closures) by inureyes](http://seoh.github.io/Swift-Korean/#09-closures-)
 
 for-loop(`for var...`)의 스코프에 있는 변수를 사용하는 함수를 만드는데, 해당하는 변수의 값이 스코프 내에서 계속 변하는 경우에 loop가 끝난 뒤 당연히 마지막값을 기준으로 함수가 실행되는 상황에서 현재값을 저장할 수 있는 방법에 대한 문제였다.
 
@@ -82,5 +83,6 @@ println(list) // ["4", "8"]
 1회의 난이도가 1이었다면 이번 난이도는 10쯤 된다. 다음의 난이도는 얼마나 될지 모르겠다.
 
 <style type="text/css">
-.right { text-align: right; }
+blockquote p:first-child { text-align: initial !important; }
+blockquote p:last-child { text-align: right; }
 </style>

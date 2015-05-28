@@ -1,0 +1,63 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>prototyping - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2014-09-09T15:00:00.000Z" class="post__time">10th Sep, 2014</time><h1 class="post__title"><a href="/blog/2014/09/10/prototyping-swipe-and-drag-gestures-with-framer-3/">Framer에서 swipe/drag 제스쳐 프로토타이핑하기</a></h1></header><div class="post__main echo"><blockquote>
+<h3>Translation of &quot;<a href="https://medium.com/@gem_ray/prototyping-swipe-and-drag-gestures-with-framer-3-2e405d50b600" target="_blank" rel="external">Prototyping swipe and drag gestures with Framer 3</a>&quot; into Korean, under the same license as the original.</h3>
+</blockquote>
+<p>우리는 <a href="https://www.potluck.it/" target="_blank" rel="external">Potluck</a>에서 iOS앱에서 인터렉션을 테스트해보고 프로토타이핑을 하기 위해 Framer.js를 사용하기 시작했다. Framer는 모바일과 데스크탑 앱에서의 인터렉션 프로토타이핑과 에니메이션을 위한 자바스크립트 프레임워크다. 쿼츠 콤포저(Quartz Composer)보다 러닝커브가 훨씬 낮고 아이폰과 데스크탑 양쪽에서 쉽게 실행할 수 있는 훌륭한 대안이다. 키노트에서 시작해서 실제같은 인터렉티브 프로토타입을 단계별로 만들 수 있다.</p>
+<p>자바스크립트 기반이기 때문에 특히 드래그나 스와이프같은 복잡한 제스쳐를 만들 때 좋다. 스와이프 거리에 따라 엘리먼트를 움직이거나 사라지게할 때 혹은 특정거리 이상 스와이프할 때 액션이 발생하도록 할 수 있다.</p>
+<p>신생 프로젝트라 예제나 문서들이 너무 없다. 그래서 배웠던 것들을 공유하려고 생각했다.</p>
+<hr>
+<p>시작하기 전에 타이핑하기 귀찮은 사람을 위해 [CodePen](http://codepen.io/seoh/full/AqycD에 완성본을 올려놨다.</p>
+<h1>Activate on release</h1>
+<p>다른 액션을 가진 테이블 셀들로 간단한 예제를 시작해보자.</p>
+<p>일단 보통 아이폰 스크린을 표시하기 위한 컨테이너 뷰를 만들어보자. 시스템 상태바를 가진 웹앱을 프로토타이핑하기 위해 높이는 598px로 정했다. (역주, 원문에서는 1096px였지만 웹에서 확인하기 좋게 절반으로 줄였다.)</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="teAkE" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>셀에서 사용자에게 보이는 부분을 정한 컨테이너를 만들고, 화면 밖에서 슬라이드하면 셀이 나타나도록 할 것이다.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="hrvAG" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>이렇게 보일 것이다.</p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/1.png" alt=""></p>
+<p>이제 셀에 드래그를 추가해보자.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="lqmjo" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>원하는 기능은 아니지만 어디로든 드래그할 수 있다.</p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/2.gif" alt=""></p>
+<hr>
+<p>더 구체적인 제스쳐를 구현하기 위해 드래그 이벤트 핸들러를 사용할 수도 있다. 뭔가 드래그할 때 세가지 이벤트가 발생한다. <code>Events.DragStart</code>는 드래그를 시작할 때 한번, <code>Events.DragEnd</code>는 드래그를 놓았을 때 한번 발생한다. <code>Events.DragMove</code>는 마우스나 손가락을 움직일 때 계속 발생한다.</p>
+<p>draggable은 &quot;speed&quot; 속성을 갖는데 마우스 움직임에 따라 어느 정도의 속도로 움직일지 결정한다. 속도를 <code>0</code>으로 설정하면 물체가 해당하는 방향(축)으로 이동하지 않게 된다.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="DKtdp" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>드래그가 끝났을 때 무엇을 할지 정할 수도 있는데, 여기에서는 원래 물체를 자리로 돌아가게 해보자.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="GHwLo" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/3.gif" alt=""></p>
+<hr>
+<p>이제 화면 밖의 엘리먼트가 드래그할 때 나타나도록 해보자. 그 엘리먼트는 셀 컨테이너의 차일드 뷰가 될 것이고(그래서 셀과 함께 움직일 것이고) 그냥 화면 밖에 놓도록 하겠다.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="liKwL" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>이 액션 바를 추가한 다음에 셀을 왼쪽으로 끌면 화면 오른쪽 끝에서 나타나는걸 볼 수 있다.</p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/4.gif" alt=""></p>
+<p>좀 재미있는걸 넣어보자. 드래그 핸들러는 액션 바를 조금이라도 움직일 때마다 실행되는데, 얼마나 셀을 움직이는지에 따라 색깔을 바꾸게 만들 수 있다.</p>
+<p>(얼마나 셀을 움직였는지에 대한)범위를 다른 (바의 색상)범위로 바꾸는 것은 <code>Utils.mapRange</code> 함수를 통해 쉽게 할 수 있다.</p>
+<p>(역주: 원문은 원래 framerjs 2를 기준으로 작성되어 <a href="http://processing.org/" target="_blank" rel="external">Proccessing 프레임워크</a>의 <code>map_range</code>라는 함수를 사용했는데 중요한 정보는 아니다.)</p>
+<p>이 함수에서는 <code>[low1, high1]</code> 범위에 있는 value를 <code>[low2, high2]</code> 범위에서의 같은 위치(비율)로 변환해준다. 이제 셀의 <em>x축 좌표</em>를 액션 바의 <em>투명도</em>로 바꿔보자.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="DHBev" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>셀을 드래그할 때 액션 바의 색은 다음과 같이 변한다.</p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/5.gif" alt=""></p>
+<p>충분히 액션 바를 드래그했을 때는 그대로 열려있도록 만들고 싶다. 이걸 하려면, DragEnd 핸들러에서 얼마나 드래그되었는지 확인하고 특정 너비를 넘었다면 계속 열려있도록 해보자.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="qCdrl" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/6.gif" alt=""></p>
+<h1>Activate on threshold</h1>
+<p>탭을 밀었을 때 계속 열려있도록 해봤다. 탭까지 가지 않고 액션을 할 수는 없을까? iOS 6의 당겨서 새로고침이 좋은 예다. 충분히 당기면 탭까지 가지 않아도 새로고침이 일어난다. (역주, 여기에서는 특정 길이만큼 드래그 후 이벤트 발생으로 애니메이션을 실행하는 것까지만 예제로 한다.)</p>
+<p>위아래로 움직이는 두번째 셀을 만들어보자.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="udyBe" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p>셀을 100px 아래로 내리면 쪼그라들게 해보자. 일단 이렇게 시도해봤다.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="ekgDo" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/7.gif" alt=""></p>
+<p>애니메이션이 좀 산만하다. 드래그할 때마다 계속 DragMove 이벤트가 발생하고 계속 애니메이션을 시작하려고 한다. 그래서 조건이 만족될 때 딱 한번만 발생하도록 해보자.</p>
+<p data-height="630" data-theme-id="0" data-slug-hash="trboC" data-default-tab="js" data-user="seoh" class="codepen"></p>
+<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/8.gif" alt=""></p>
+<p>(역주, 원문에서는 Drag와 Animate 기능이 충돌해서 제대로 Animate가 작동하지 않아 Drag하는 레이어와 Animate되는 레이어를 따로 뒀는데 버그가 수정되었는지 잘 작동해서 그 이하 부분은 생략했다.)</p>
+<hr>
+<h1>아이폰에서 테스트</h1>
+<p>Framer Studio 1.7에서 Mirror라는 굉장히 편한 기능이 추가되었다. Studio에서 작업한 내용을 저장하고 Mirror 버튼을 누르면 작업중인 컴퓨터를 자동으로 서버로 사용해서 외부에서 접근할 수 있는 주소를 생성해준다. (역주, 원문에서는 Dropbox Public folder에 대한 내용이었지만 Mirror 기능이 더 유용하다고 생각해서 변경했다.)</p>
+<script async src="http://codepen.io/assets/embed/ei.js"></script></div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/framerjs/" class="post__tag__link">framerjs</a></li><li class="post__tag__item"><a href="/blog/tags/prototyping/" class="post__tag__link">prototyping</a></li></ul><a href="/blog/2014/09/10/prototyping-swipe-and-drag-gestures-with-framer-3/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><span title="Next" class="page-menu__link icon-arrow-right page-menu__link--disabled"></span></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-52090105-1');ga('send','pageview');
+</script></body></html>

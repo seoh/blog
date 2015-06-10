@@ -184,3 +184,12 @@ closure
 - 중복 제거를 위해 소문자로 변환
 - 최빈 15개 단어
 
+
+---
+
+참고로 강의노트(PDF)가 공개되어있다.
+
+- [Lecture 1 slides](https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week1Lec1.pdf)
+- [Lecture 2 slides](https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week1Lec2.pdf)
+- [Lecture 3 slides](https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week2Lec3.pdf)
+- [Lecture 4 slides](https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week2Lec4.pdf)

@@ -8,7 +8,7 @@
     <link>http://seoh.github.io/blog//</link>
     <atom:link href="/blog/rss.xml" rel="self" type="application/rss+xml"/>
     <description><![CDATA[most opinionated blog]]></description>
-    <pubDate>Wed, 10 Jun 2015 12:33:01 GMT</pubDate>
+    <pubDate>Wed, 10 Jun 2015 12:37:08 GMT</pubDate>
     <generator>http://hexo.io/</generator>
     
     <item>
@@ -190,6 +190,14 @@ Jim Gray 모델 vs Ben Fry 모델 vs Jeff Hammerbacher 모델</p>
 <li>띄어쓰기로 단어 구분</li>
 <li>중복 제거를 위해 소문자로 변환</li>
 <li>최빈 15개 단어</li>
+</ul>
+<hr>
+<p>참고로 강의노트(PDF)가 공개되어있다.</p>
+<ul>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week1Lec1.pdf" target="_blank" rel="external">Lecture 1 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week1Lec2.pdf" target="_blank" rel="external">Lecture 2 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week2Lec3.pdf" target="_blank" rel="external">Lecture 3 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week2Lec4.pdf" target="_blank" rel="external">Lecture 4 slides</a></li>
 </ul>
 ]]></content:encoded>
       <comments>http://seoh.github.io/blog/2015/06/10/big-data-with-spark-1-2-week/#disqus_comments</comments>

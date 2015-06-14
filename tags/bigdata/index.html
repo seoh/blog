@@ -1,4 +1,95 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>bigdata - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-10T12:18:51.000Z" class="post__time">10th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/10/big-data-with-spark-1-2-week/">Spark로 빅데이터 입문, 1-2주차 노트</a></h1></header><div class="post__main echo"><p>edX에서 <a href="https://courses.edx.org/courses/BerkeleyX/CS100.1x/1T2015" target="_blank" rel="external">Spark로 빅데이터 입문(Introduction to Big Data with Apache Spark)</a>을
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>bigdata - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-14T14:43:28.000Z" class="post__time">14th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/14/big-data-with-spark-3-week/">Spark로 빅데이터 입문, 3주차 노트</a></h1></header><div class="post__main echo"><h3>Lecture 5. 반구조적 데이터</h3>
+<p>자료 형태</p>
+<ul>
+<li>구조적: 정형(schema) 데이터. RDB, formatted msg</li>
+<li>반구조적: schema를 그때그때. XML, JSON, mp3tag</li>
+<li>비구조적: plain text</li>
+</ul>
+<p>파일이란</p>
+<ul>
+<li>byte의 나열</li>
+<li>FS를 통한 상하구조</li>
+<li>POSIX interface(이건 왜?)</li>
+</ul>
+<p>테이블</p>
+<ul>
+<li>처음부터 구조를 잘 짜야</li>
+<li>같은 데이터도 타입문제(2 vs 2.0)</li>
+<li>이력관리</li>
+</ul>
+<p>취합 문제</p>
+<ul>
+<li>필드가 다를 때</li>
+<li>데이터 단위가 다름</li>
+<li>같은 값인데 표현이 다름</li>
+</ul>
+<p>pandas</p>
+<ul>
+<li>data analysys + modeling for python</li>
+<li>DataFrame: named column</li>
+<li>R도 비슷한 data frame 지원</li>
+</ul>
+<p>DF in pySpark</p>
+<ul>
+<li>1.3부터 RDD 확장으로 지원</li>
+<li>pandas, R의 DF와 같지만 분산환경</li>
+<li>pandas DF와 convert 쉬움</li>
+<li>pandas -&gt; pySpark시 driver 메모리 꽉 찰 수 있음 주의</li>
+<li>RDD는 Scala구현체가 Python구현체보다 두 배 이상 빠름</li>
+<li>DF는 RDD Scala보다 두 배쯤 빠르고 Py/Scala 비슷</li>
+</ul>
+<p>Apache Common Log Format의 데이터를 분석해보자</p>
+<ul>
+<li>컨텐츠 통계: status code, size</li>
+<li>404 횟수</li>
+</ul>
+<ul>
+<li>하루에 단일host는 얼마나?</li>
+<li>하루에 요청은 얼마나?</li>
+<li>호스트당 평균 요청은?</li>
+<li>하루에 404는?</li>
+</ul>
+<p>로그 마이닝</p>
+<ul>
+<li>splunk를 통해 event log, disk error, network, cpu/memory usage 등 통계 및 분석</li>
+</ul>
+<p>read/write</p>
+<ul>
+<li>binary가 항상 빠르다</li>
+<li>압축 알고리즘과 rw속도는 어느 정도 trade-off</li>
+</ul>
+<h3>Lecture 6. 구조적 데이터</h3>
+<p>RDB</p>
+<ul>
+<li>relation: schema + instance</li>
+<li>sparse에 약하다</li>
+</ul>
+<p>SQL 기초</p>
+<ul>
+<li>select, (inner, outer)join</li>
+<li>join in Spark</li>
+</ul>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>), (<span class="string">"a"</span>, <span class="number">3</span>)])</span><br><span class="line">x.join(y).collect</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">3</span>))]</span><br><span class="line"></span><br><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>)])</span><br><span class="line">x.leftOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'b'</span>, (<span class="number">4</span>, <span class="keyword">None</span>))]</span><br><span class="line"></span><br><span class="line">x.rightOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>))]</span><br><span class="line"></span><br><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>), (<span class="string">"c"</span>, <span class="number">8</span>)])</span><br><span class="line">x.fullOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'c'</span>, (<span class="keyword">None</span>, <span class="number">8</span>)), (<span class="string">'b'</span>, (<span class="number">4</span>, <span class="keyword">None</span>))]</span><br></pre></td></tr></table></figure>
+<h3>Lab 2. 로그 분석</h3>
+<p>Apache Log Format을</p>
+<ol>
+<li>정규식으로 나눠서</li>
+<li>종류별 aggregation</li>
+<li>key, value로 나눠서 plot</li>
+<li>그리기 위해 2, 3번의 반복이 많아 분량에 비해 생각할꺼리는 적음</li>
+<li>아마도 python 사용에 익숙치 않은 사람들을 위한 단순반복으로 추정</li>
+</ol>
+<p>tip.</p>
+<p>저번 과제에 비해 데이터가 커서연산할 때 시간이 많이 걸리므로 REPL이나
+편한 python 툴을 꺼내놓고 기다리면서 다음 셀에서 어떻게 하면 될지 간단히
+테스트해보면 좋다.</p>
+<p><img src="/blog/images/big-data-with-spark-3-week/ptpython.png" alt=""></p>
+<hr>
+<ul>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week3Lec5.pdf" target="_blank" rel="external">Lecture 5 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week3Lec6.pdf" target="_blank" rel="external">Lecture 6 slides</a></li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/bigdata/" class="post__tag__link">bigdata</a></li><li class="post__tag__item"><a href="/blog/tags/spark/" class="post__tag__link">spark</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/big-data-with-spark-3-week.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article><article class="post"><header class="post__head"><time datetime="2015-06-10T12:18:51.000Z" class="post__time">10th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/10/big-data-with-spark-1-2-week/">Spark로 빅데이터 입문, 1-2주차 노트</a></h1></header><div class="post__main echo"><p>edX에서 <a href="https://courses.edx.org/courses/BerkeleyX/CS100.1x/1T2015" target="_blank" rel="external">Spark로 빅데이터 입문(Introduction to Big Data with Apache Spark)</a>을
 듣고 있다. UC Berkeley의 Anthony Joseph 교수가 진행하는 수업으로, 실제 데이터를 가지고 과제
 4개를 진행하면서 Spark로 빅데이터 분석하는 방법을 배운다고 하는데, 수업 난이도 자체는 높지 않다.
 대상은 Python 경험자로 분산 컴퓨팅/Spark에 대한 지식은 없어도 된다고 되어있다. 환경 설정도

@@ -1,4 +1,95 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-10T17:02:01.000Z" class="post__time">11th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/11/function-bind-syntax/">ES7의 함수 bind 문법</a></h1></header><div class="post__main echo"><p>어제 @wesbos가 <code>.bind()</code>를 사용한 <code>querySelector</code> 단축에 대한 js 소스를 캡쳐한 <a href="https://twitter.com/wesbos/status/608341616173182977" target="_blank" rel="external">트윗</a>을 올렸다.</p>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-14T14:43:28.000Z" class="post__time">14th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/14/big-data-with-spark-3-week/">Spark로 빅데이터 입문, 3주차 노트</a></h1></header><div class="post__main echo"><h3>Lecture 5. 반구조적 데이터</h3>
+<p>자료 형태</p>
+<ul>
+<li>구조적: 정형(schema) 데이터. RDB, formatted msg</li>
+<li>반구조적: schema를 그때그때. XML, JSON, mp3tag</li>
+<li>비구조적: plain text</li>
+</ul>
+<p>파일이란</p>
+<ul>
+<li>byte의 나열</li>
+<li>FS를 통한 상하구조</li>
+<li>POSIX interface(이건 왜?)</li>
+</ul>
+<p>테이블</p>
+<ul>
+<li>처음부터 구조를 잘 짜야</li>
+<li>같은 데이터도 타입문제(2 vs 2.0)</li>
+<li>이력관리</li>
+</ul>
+<p>취합 문제</p>
+<ul>
+<li>필드가 다를 때</li>
+<li>데이터 단위가 다름</li>
+<li>같은 값인데 표현이 다름</li>
+</ul>
+<p>pandas</p>
+<ul>
+<li>data analysys + modeling for python</li>
+<li>DataFrame: named column</li>
+<li>R도 비슷한 data frame 지원</li>
+</ul>
+<p>DF in pySpark</p>
+<ul>
+<li>1.3부터 RDD 확장으로 지원</li>
+<li>pandas, R의 DF와 같지만 분산환경</li>
+<li>pandas DF와 convert 쉬움</li>
+<li>pandas -&gt; pySpark시 driver 메모리 꽉 찰 수 있음 주의</li>
+<li>RDD는 Scala구현체가 Python구현체보다 두 배 이상 빠름</li>
+<li>DF는 RDD Scala보다 두 배쯤 빠르고 Py/Scala 비슷</li>
+</ul>
+<p>Apache Common Log Format의 데이터를 분석해보자</p>
+<ul>
+<li>컨텐츠 통계: status code, size</li>
+<li>404 횟수</li>
+</ul>
+<ul>
+<li>하루에 단일host는 얼마나?</li>
+<li>하루에 요청은 얼마나?</li>
+<li>호스트당 평균 요청은?</li>
+<li>하루에 404는?</li>
+</ul>
+<p>로그 마이닝</p>
+<ul>
+<li>splunk를 통해 event log, disk error, network, cpu/memory usage 등 통계 및 분석</li>
+</ul>
+<p>read/write</p>
+<ul>
+<li>binary가 항상 빠르다</li>
+<li>압축 알고리즘과 rw속도는 어느 정도 trade-off</li>
+</ul>
+<h3>Lecture 6. 구조적 데이터</h3>
+<p>RDB</p>
+<ul>
+<li>relation: schema + instance</li>
+<li>sparse에 약하다</li>
+</ul>
+<p>SQL 기초</p>
+<ul>
+<li>select, (inner, outer)join</li>
+<li>join in Spark</li>
+</ul>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>), (<span class="string">"a"</span>, <span class="number">3</span>)])</span><br><span class="line">x.join(y).collect</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">3</span>))]</span><br><span class="line"></span><br><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>)])</span><br><span class="line">x.leftOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'b'</span>, (<span class="number">4</span>, <span class="keyword">None</span>))]</span><br><span class="line"></span><br><span class="line">x.rightOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>))]</span><br><span class="line"></span><br><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>), (<span class="string">"c"</span>, <span class="number">8</span>)])</span><br><span class="line">x.fullOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'c'</span>, (<span class="keyword">None</span>, <span class="number">8</span>)), (<span class="string">'b'</span>, (<span class="number">4</span>, <span class="keyword">None</span>))]</span><br></pre></td></tr></table></figure>
+<h3>Lab 2. 로그 분석</h3>
+<p>Apache Log Format을</p>
+<ol>
+<li>정규식으로 나눠서</li>
+<li>종류별 aggregation</li>
+<li>key, value로 나눠서 plot</li>
+<li>그리기 위해 2, 3번의 반복이 많아 분량에 비해 생각할꺼리는 적음</li>
+<li>아마도 python 사용에 익숙치 않은 사람들을 위한 단순반복으로 추정</li>
+</ol>
+<p>tip.</p>
+<p>저번 과제에 비해 데이터가 커서연산할 때 시간이 많이 걸리므로 REPL이나
+편한 python 툴을 꺼내놓고 기다리면서 다음 셀에서 어떻게 하면 될지 간단히
+테스트해보면 좋다.</p>
+<p><img src="/blog/images/big-data-with-spark-3-week/ptpython.png" alt=""></p>
+<hr>
+<ul>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week3Lec5.pdf" target="_blank" rel="external">Lecture 5 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week3Lec6.pdf" target="_blank" rel="external">Lecture 6 slides</a></li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/bigdata/" class="post__tag__link">bigdata</a></li><li class="post__tag__item"><a href="/blog/tags/spark/" class="post__tag__link">spark</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/big-data-with-spark-3-week.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article><article class="post"><header class="post__head"><time datetime="2015-06-10T17:02:01.000Z" class="post__time">11th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/11/function-bind-syntax/">ES7의 함수 bind 문법</a></h1></header><div class="post__main echo"><p>어제 @wesbos가 <code>.bind()</code>를 사용한 <code>querySelector</code> 단축에 대한 js 소스를 캡쳐한 <a href="https://twitter.com/wesbos/status/608341616173182977" target="_blank" rel="external">트윗</a>을 올렸다.</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 선택된 첫번째 엘리먼트 - $('input[name="food"]')</span></span><br><span class="line"><span class="keyword">var</span> $ = <span class="built_in">document</span>.querySelector.bind(<span class="built_in">document</span>);</span><br><span class="line"><span class="comment">// 선택된 엘리먼트들의 배열 - $('img.dog')</span></span><br><span class="line"><span class="keyword">var</span> $$ = <span class="built_in">document</span>.querySelectorAll.bind(<span class="built_in">document</span>)</span><br></pre></td></tr></table></figure>
 <p>여기에 @paul_irish가 비슷한 컨셉으로 이벤트 등록까지 할 수 있는 <a href="https://gist.github.com/paulirish/12fb951a8b893a454b32" target="_blank" rel="external">bling.js</a>를 <a href="https://twitter.com/paul_irish/status/608433593061376003" target="_blank" rel="external">리플</a>로 남겼다.</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Node.prototype.on = <span class="built_in">window</span>.on = <span class="function"><span class="keyword">function</span>(<span class="params">name, fn</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.addEventListener(name, fn);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 이하 생략</span></span><br></pre></td></tr></table></figure>
@@ -831,27 +922,7 @@ blockquote p:last-child { text-align: right; }
 <style type="text/css">
 blockquote p:first-child { text-align: initial !important; }
 blockquote p:last-child { text-align: right; }
-</style></div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/osxdev/" class="post__tag__link">osxdev</a></li><li class="post__tag__item"><a href="/blog/tags/swift/" class="post__tag__link">swift</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/coding-dojo-2nd.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article><article class="post"><header class="post__head"><time datetime="2014-07-23T15:00:00.000Z" class="post__time">24th Jul, 2014</time><h1 class="post__title"><a href="/blog/2014/07/24/coding-dojo-1st/">Coding Dojo #1 후기</a></h1></header><div class="post__main echo"><p>OSXDev에서 열린 <a href="http://osxdev.org/forum/index.php?threads/swift-%EC%BD%94%EB%94%A9%EB%8F%84%EC%9E%A5-1%ED%9A%8C-%EA%B3%B5%EC%A7%80.367/" target="_blank" rel="external">Coding Dojo</a>에 다녀왔다. 보통 Dojo가 붙은 사이트들을 생각해서 이해하지 못하면 어쩌나 긴장했는데 다행히 난이도는 예상보다 낮았다. 타겟은 &quot;책을 읽었다&quot;와 &quot;이해했다&quot; 사이의 사람이 대상인 것 같다. 그러니까 책은 읽었는데 어떻게 써야할지 감이 안오는 사람들을 위한 '체득'의 시간 정도? 문제를 풀어보고 해석하고의 반복으로 진행되어 네 문제를 풀었다.</p>
-<p>진행했던 문제들과 소스보다는 어떤 의도의 문제들이었고 어떤 것을 얻었나를 정리해본다.</p>
-<hr>
-<h1>1. if문에서의 Optional과 Boolean의 차이</h1>
-<p>트위터에 예전에 올라왔던 문제인데 이 문제와 같은 의도였다.</p>
-<blockquote class="twitter-tweet" lang="ko"><p>Swift 퀴즈 - 아래 코드의 실행 결과는 무엇일까요? <a href="http://t.co/5wK9hEnILn" target="_blank" rel="external">pic.twitter.com/5wK9hEnILn</a></p>&mdash; 김정현 (@gluebyte) <a href="https://twitter.com/gluebyte/statuses/487490260075417600" target="_blank" rel="external">2014년 7월 11일</a></blockquote>
-<script async src="http://platform.twitter.com/widgets.js" charset="utf-8"></script>
-<p>팁, 경우에 따라 다르겠지만 Boolean만 처리하지 말고 Optional에서 nil일 때도 처리해주는게 좋다.</p>
-<h1>2. switch에서의 pattern matching</h1>
-<p>복잡한 케이스에 대해서 switch-case를 단순히 objective-c에서 사용했던 것처럼 쓰거나 if-else문을 반복하는 것보다 tuple로 묶어서 한번에 처리하면 깔끔하고, where절(guard)을 통해 조건을 처리하면 더 깔끔하게 처리된다.</p>
-<p>팁, pattern matching에서는 분기가 길어지면 case가 switch문과 거리가 멀어져서 어떤 의미인지 알기 어려운데, 특히 case에 true/false를 사용하는 경우 의미를 바로 알기 어려우므로 enum을 사용해서 의미있는 값을 변수로 만들어서 표현하면 좋다.</p>
-<h1>3. 간단한 알고리즘 풀이</h1>
-<p>중첩된 for문을 어떻게 사용하는지에 대한 문제. 참고로 100 doors 문제였다.</p>
-<h1>4. repeatString</h1>
-<p>String에 대한 기본 사용법(concat)과 loop 등을 사용한 정해진 횟수의 문자열 반복.</p>
-<hr>
-<p>진도가 Control Flow까지만여서 그 안에서만으로 해결할 수 있는 문제들을 짧은 시간 내에 제출하느라 고생하셨으리라 생각된다.</p>
-<p>덧 1, 4번 문제의 경우 제약 때문에 함수로 구현했지만 operator overloading을 통해 쓰기 좋게 만들 수도 있다.</p>
-<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="func"><span class="keyword">func</span> <span class="title">repeatString</span><span class="params">(<span class="built_in">count</span> n:Int,string s:String)</span></span> -&gt; <span class="type">String</span> &#123;  </span><br><span class="line">    <span class="keyword">return</span> <span class="type">Array</span>(<span class="built_in">count</span>:n, repeatedValue:s).<span class="built_in">reduce</span>(<span class="string">""</span>,+)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">@infix</span> <span class="func"><span class="keyword">func</span> * <span class="params">(<span class="keyword">left</span>: String, <span class="keyword">right</span>: Int)</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> repeatString(<span class="built_in">count</span>: <span class="keyword">right</span>, string: <span class="keyword">left</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">@infix</span> <span class="func"><span class="keyword">func</span> * <span class="params">(<span class="keyword">left</span>: Int, <span class="keyword">right</span>: String)</span></span> -&gt; <span class="type">String</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> repeatString(<span class="built_in">count</span>: <span class="keyword">left</span>, string: <span class="keyword">right</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">println</span>(<span class="string">"a"</span> * <span class="number">2</span>) <span class="comment">// "aa"  </span></span><br><span class="line"><span class="built_in">println</span>(<span class="number">2</span> * <span class="string">"a"</span>) <span class="comment">// "aa"</span></span><br></pre></td></tr></table></figure>
-<p>덧 2, swift 프로젝트에서 다른 파일에 구현을 해도 하나로 묶어서 해석하므로 같은 이름의 함수를 구현하면 에러가 난다는 질문이 있었는데, 얼마 전에 추가된 접근자(access control)을 통해 해결할 수 있을 줄 알고 시도해봤지만 안된다. c처럼 static 키워드가 생기거나 다른 방법을 찾아봐야겠다.</p>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/osxdev/" class="post__tag__link">osxdev</a></li><li class="post__tag__item"><a href="/blog/tags/swift/" class="post__tag__link">swift</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/coding-dojo-1st.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/blog/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+</style></div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/osxdev/" class="post__tag__link">osxdev</a></li><li class="post__tag__item"><a href="/blog/tags/swift/" class="post__tag__link">swift</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/coding-dojo-2nd.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/blog/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
 function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
 e=o.createElement(i);r=o.getElementsByTagName(i)[0];
 e.src='//www.google-analytics.com/analytics.js';

@@ -8,8 +8,127 @@
     <link>http://seoh.github.io/blog//</link>
     <atom:link href="/blog/rss.xml" rel="self" type="application/rss+xml"/>
     <description><![CDATA[most opinionated blog]]></description>
-    <pubDate>Wed, 10 Jun 2015 17:06:40 GMT</pubDate>
+    <pubDate>Sun, 14 Jun 2015 15:03:06 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title><![CDATA[Spark로 빅데이터 입문, 3주차 노트]]></title>
+      <link>http://seoh.github.io/blog/2015/06/14/big-data-with-spark-3-week/</link>
+      <guid>http://seoh.github.io/blog/2015/06/14/big-data-with-spark-3-week/</guid>
+      <pubDate>Sun, 14 Jun 2015 14:43:28 GMT</pubDate>
+      <description>
+      <![CDATA[Lecture 5. 반구조적 데이터
+자료 형태
+
+구조적: 정형(schema) 데이터. RDB, formatted msg
+반구조적: schema를 그때그때. XML, JSON, mp3tag
+비구조적: plain text
+
+파일이란
+
+byte의 나열
+FS를 통한 상하구조
+POSIX interface(이건 왜?)
+
+테이블
+
+처음부터 구조를 잘 짜야
+같은 데이터도]]>
+      </description>
+      <content:encoded><![CDATA[<h3>Lecture 5. 반구조적 데이터</h3>
+<p>자료 형태</p>
+<ul>
+<li>구조적: 정형(schema) 데이터. RDB, formatted msg</li>
+<li>반구조적: schema를 그때그때. XML, JSON, mp3tag</li>
+<li>비구조적: plain text</li>
+</ul>
+<p>파일이란</p>
+<ul>
+<li>byte의 나열</li>
+<li>FS를 통한 상하구조</li>
+<li>POSIX interface(이건 왜?)</li>
+</ul>
+<p>테이블</p>
+<ul>
+<li>처음부터 구조를 잘 짜야</li>
+<li>같은 데이터도 타입문제(2 vs 2.0)</li>
+<li>이력관리</li>
+</ul>
+<p>취합 문제</p>
+<ul>
+<li>필드가 다를 때</li>
+<li>데이터 단위가 다름</li>
+<li>같은 값인데 표현이 다름</li>
+</ul>
+<p>pandas</p>
+<ul>
+<li>data analysys + modeling for python</li>
+<li>DataFrame: named column</li>
+<li>R도 비슷한 data frame 지원</li>
+</ul>
+<p>DF in pySpark</p>
+<ul>
+<li>1.3부터 RDD 확장으로 지원</li>
+<li>pandas, R의 DF와 같지만 분산환경</li>
+<li>pandas DF와 convert 쉬움</li>
+<li>pandas -&gt; pySpark시 driver 메모리 꽉 찰 수 있음 주의</li>
+<li>RDD는 Scala구현체가 Python구현체보다 두 배 이상 빠름</li>
+<li>DF는 RDD Scala보다 두 배쯤 빠르고 Py/Scala 비슷</li>
+</ul>
+<p>Apache Common Log Format의 데이터를 분석해보자</p>
+<ul>
+<li>컨텐츠 통계: status code, size</li>
+<li>404 횟수</li>
+</ul>
+<ul>
+<li>하루에 단일host는 얼마나?</li>
+<li>하루에 요청은 얼마나?</li>
+<li>호스트당 평균 요청은?</li>
+<li>하루에 404는?</li>
+</ul>
+<p>로그 마이닝</p>
+<ul>
+<li>splunk를 통해 event log, disk error, network, cpu/memory usage 등 통계 및 분석</li>
+</ul>
+<p>read/write</p>
+<ul>
+<li>binary가 항상 빠르다</li>
+<li>압축 알고리즘과 rw속도는 어느 정도 trade-off</li>
+</ul>
+<h3>Lecture 6. 구조적 데이터</h3>
+<p>RDB</p>
+<ul>
+<li>relation: schema + instance</li>
+<li>sparse에 약하다</li>
+</ul>
+<p>SQL 기초</p>
+<ul>
+<li>select, (inner, outer)join</li>
+<li>join in Spark</li>
+</ul>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>), (<span class="string">"a"</span>, <span class="number">3</span>)])</span><br><span class="line">x.join(y).collect</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">3</span>))]</span><br><span class="line"></span><br><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>)])</span><br><span class="line">x.leftOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'b'</span>, (<span class="number">4</span>, <span class="keyword">None</span>))]</span><br><span class="line"></span><br><span class="line">x.rightOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>))]</span><br><span class="line"></span><br><span class="line">x = sc.parallelize([(<span class="string">"a"</span>, <span class="number">1</span>), (<span class="string">"b"</span>, <span class="number">4</span>)])</span><br><span class="line">y = sc.parallelize([(<span class="string">"a"</span>, <span class="number">2</span>), (<span class="string">"c"</span>, <span class="number">8</span>)])</span><br><span class="line">x.fullOuterJoin(y).collect()</span><br><span class="line">// [(<span class="string">'a'</span>, (<span class="number">1</span>, <span class="number">2</span>)), (<span class="string">'c'</span>, (<span class="keyword">None</span>, <span class="number">8</span>)), (<span class="string">'b'</span>, (<span class="number">4</span>, <span class="keyword">None</span>))]</span><br></pre></td></tr></table></figure>
+<h3>Lab 2. 로그 분석</h3>
+<p>Apache Log Format을</p>
+<ol>
+<li>정규식으로 나눠서</li>
+<li>종류별 aggregation</li>
+<li>key, value로 나눠서 plot</li>
+<li>그리기 위해 2, 3번의 반복이 많아 분량에 비해 생각할꺼리는 적음</li>
+<li>아마도 python 사용에 익숙치 않은 사람들을 위한 단순반복으로 추정</li>
+</ol>
+<p>tip.</p>
+<p>저번 과제에 비해 데이터가 커서연산할 때 시간이 많이 걸리므로 REPL이나
+편한 python 툴을 꺼내놓고 기다리면서 다음 셀에서 어떻게 하면 될지 간단히
+테스트해보면 좋다.</p>
+<p><img src="/blog/images/big-data-with-spark-3-week/ptpython.png" alt=""></p>
+<hr>
+<ul>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week3Lec5.pdf" target="_blank" rel="external">Lecture 5 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week3Lec6.pdf" target="_blank" rel="external">Lecture 6 slides</a></li>
+</ul>
+]]></content:encoded>
+      <comments>http://seoh.github.io/blog/2015/06/14/big-data-with-spark-3-week/#disqus_comments</comments>
+    </item>
     
     <item>
       <title><![CDATA[ES7의 함수 bind 문법]]></title>
@@ -1589,78 +1708,6 @@ output: DAMP -&gt; LAMP -&gt; LIMP -&gt; LIME -&gt; LIKE
 <p>좀 더 좋은 방법을 찾아보자.</p>
 ]]></content:encoded>
       <comments>http://seoh.github.io/blog/2012/09/12/coding-interview-p215-18-10/#disqus_comments</comments>
-    </item>
-    
-    <item>
-      <title><![CDATA[코딩 인터뷰 완전 분석 210쪽 17.3 변형 문제 풀이]]></title>
-      <link>http://seoh.github.io/blog/2012/09/05/coding-interview-p210-17.3-modified/</link>
-      <guid>http://seoh.github.io/blog/2012/09/05/coding-interview-p210-17.3-modified/</guid>
-      <pubDate>Wed, 05 Sep 2012 12:51:00 GMT</pubDate>
-      <description>
-      <![CDATA[
-자연수 n을 입력받고, n!의 계산 결과 중 마지막에 붙은 연속된 0의 개수와 연속된 0 바로 앞에 나오는 숫자를 구하라.
-
-
-[실행 예]
-input n: 15
-output: 3 8
-
-
-[설명]
-15!은 1307674368000이므로, 마지막에 연속된 0은 3개이고, 바로 앞의 숫자는 8이다.
-
-
-
-조건 *
-
-
-
-n의 범위는 1 이상, 10000 이하입니]]>
-      </description>
-      <content:encoded><![CDATA[<blockquote>
-<p>자연수 n을 입력받고, n!의 계산 결과 중 마지막에 붙은 연속된 0의 개수와 연속된 0 바로 앞에 나오는 숫자를 구하라.</p>
-</blockquote>
-<blockquote>
-<p>[실행 예]
-input n: 15
-output: 3 8</p>
-</blockquote>
-<blockquote>
-<p>[설명]
-15!은 1307674368000이므로, 마지막에 연속된 0은 3개이고, 바로 앞의 숫자는 8이다.</p>
-</blockquote>
-<blockquote>
-<ul>
-<li>조건 *</li>
-</ul>
-</blockquote>
-<blockquote>
-<p>n의 범위는 1 이상, 10000 이하입니다.
-테스트 입력은 다음과 같습니다.
-20! = 2432902008176640000
-30! = 265252859812191058636308480000000
-40! = 815915283247897734345611269596115894272000000000
-50! = 30414093201713378043612608166064768844377641568960512000000000000
-100! = 93326215443944152681699238856266700490715968264381621468592963
-8952175999932299156089414639761565182862536979208272237582511852
-10916864000000000000000000000000
-프로그래밍 언어에서 제공하는 자릿수 제한 없는 곱셈을 이용하거나, 이런 형태의 곱셈 함수를 직접 구현해도 답을 얻을 수 있지만, 문제의 의도와는 다릅니다.
-정답 검토의 편의를 위해 블로그 포스팅에 2012!와 10000!의 결과를 남겨주세요.
-(심화 문제) 연속된 0 앞에 나오는 여러 숫자를 구하는 것도 가능하니, 심심하신 분은 도전해보세요. ^^</p>
-</blockquote>
-<h3>1. Simple Approach</h3>
-<p>아주 간단하게 생각해서 굳이 다 계산할 필요없이 마지막 원하는 자릿수만 남겨보자.</p>
-<figure class="highlight coffee"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># simple.factorial.coffee</span></span><br><span class="line">n = <span class="number">1</span></span><br><span class="line">k = <span class="number">3</span></span><br><span class="line">N = <span class="number">2012</span></span><br><span class="line">digit = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">digit = digit * <span class="number">10</span> <span class="keyword">while</span> k-- <span class="keyword">isnt</span> <span class="number">0</span></span><br><span class="line">zero = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">1.</span>.N]</span><br><span class="line">    n = n*i</span><br><span class="line">    <span class="keyword">while</span> n % <span class="number">10</span> <span class="keyword">is</span> <span class="number">0</span></span><br><span class="line">        n = n/<span class="number">10</span></span><br><span class="line">        zero++</span><br><span class="line"></span><br><span class="line">    n = n%digit</span><br><span class="line">    <span class="built_in">console</span>.log <span class="string">"<span class="subst">#&#123;i&#125;</span>! = ...<span class="subst">#&#123;n&#125;</span>*10^<span class="subst">#&#123;zero&#125;</span>"</span></span><br></pre></td></tr></table></figure>
-<p>k는 원하는 자리 수. 3자리만 끊어서 보도록 했다. 결과는</p>
-<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2012</span><span class="subst">!</span> <span class="subst">=</span> <span class="attribute">...</span><span class="number">928</span><span class="subst">*</span><span class="number">10</span>^<span class="number">501</span></span><br><span class="line"><span class="preprocessor">[</span>Finished <span class="keyword">in</span> <span class="number">0.7</span>s<span class="preprocessor">]</span><span class="markup"></span></span><br></pre></td></tr></table></figure>
-<h3>2. without 2, 5</h3>
-<p>0의 개수를 결정하는 2와 5는 따로 처리한다. N까지 숫자를 모두 곱해서 소인수분해를 하면 2가 5보다 항상 클까? non-zero digit of factorial로 검색하니 바로 맨 위에 이 <a href="http://comeoncodeon.wordpress.com/2009/06/20/lastnon-zero-digit-of-factorial/" target="_blank" rel="external">포스팅</a>이 나왔다. Approach1은 누구나 생각할 수 있고 2에 대한 수학적인 증명이 있어야할텐데 그건 차차 생각해보도록 하고 일단 구현해보도록 했다.</p>
-<figure class="highlight coffee"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#reduce2and5.factorial.coffee</span></span><br><span class="line">n = <span class="number">1</span></span><br><span class="line">k = <span class="number">3</span></span><br><span class="line">N = <span class="number">2012</span></span><br><span class="line"></span><br><span class="line">digit = <span class="number">1</span></span><br><span class="line"><span class="keyword">while</span> k-- <span class="keyword">isnt</span> <span class="number">0</span></span><br><span class="line">    digit = digit * <span class="number">10</span></span><br><span class="line"></span><br><span class="line">zero = <span class="number">0</span></span><br><span class="line">n2 = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">1.</span>.N]</span><br><span class="line">    j = i</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> j % <span class="number">10</span> <span class="keyword">is</span> <span class="number">0</span></span><br><span class="line">        j /= <span class="number">10</span></span><br><span class="line">        zero++</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> j % <span class="number">2</span> <span class="keyword">is</span> <span class="number">0</span></span><br><span class="line">        j /= <span class="number">2</span></span><br><span class="line">        n2++</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> j % <span class="number">5</span> <span class="keyword">is</span> <span class="number">0</span></span><br><span class="line">        j /= <span class="number">5</span></span><br><span class="line">        n2--</span><br><span class="line">        <span class="built_in">console</span>.error i <span class="keyword">if</span> n2 <span class="keyword">is</span> <span class="number">0</span></span><br><span class="line">        zero++</span><br><span class="line"></span><br><span class="line">    n = n*j % digit</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> n2-- <span class="keyword">isnt</span> <span class="number">0</span></span><br><span class="line">    n = n*<span class="number">2</span> % digit</span><br><span class="line"><span class="built_in">console</span>.log <span class="string">"<span class="subst">#&#123;N&#125;</span>! = ...<span class="subst">#&#123;n&#125;</span>*10^<span class="subst">#&#123;zero&#125;</span>"</span></span><br></pre></td></tr></table></figure>
-<p>결과는</p>
-<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2012</span><span class="subst">!</span> <span class="subst">=</span> <span class="attribute">...</span><span class="number">928</span><span class="subst">*</span><span class="number">10</span>^<span class="number">501</span></span><br><span class="line"><span class="preprocessor">[</span>Finished <span class="keyword">in</span> <span class="number">0.2</span>s<span class="preprocessor">]</span><span class="markup"></span></span><br></pre></td></tr></table></figure>
-<p>확실하게 줄었다. Approach3과 4에 대해서는 더 생각해봐야겠는데 일단 카페 마감 시간이라 나가도록 하겠다.</p>
-]]></content:encoded>
-      <comments>http://seoh.github.io/blog/2012/09/05/coding-interview-p210-17.3-modified/#disqus_comments</comments>
     </item>
     
   </channel>

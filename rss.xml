@@ -8,8 +8,156 @@
     <link>http://seoh.github.io/blog//</link>
     <atom:link href="/blog/rss.xml" rel="self" type="application/rss+xml"/>
     <description><![CDATA[most opinionated blog]]></description>
-    <pubDate>Sun, 14 Jun 2015 15:03:06 GMT</pubDate>
+    <pubDate>Thu, 25 Jun 2015 18:36:19 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title><![CDATA[Spark로 빅데이터 입문, 4주차 노트]]></title>
+      <link>http://seoh.github.io/blog/2015/06/26/big-data-with-spark-4-week/</link>
+      <guid>http://seoh.github.io/blog/2015/06/26/big-data-with-spark-4-week/</guid>
+      <pubDate>Thu, 25 Jun 2015 18:24:00 GMT</pubDate>
+      <description>
+      <![CDATA[4주차. 데이터 품질, 탐헌적 데이터 분석과 머신 러닝
+Lecture 7. 데이터 품질
+데이터 클리닝
+
+왜곡: 처리과정에서 변질된 표본들
+선택편견: 값에 따른 표본의 가능도(likelihood)
+좌우검열: 데이터가 무한대일 때 시작과 끝을 어떻게 자를지
+의존성: 표본이 독립적인지 아닌지에 대한 판단
+
+
+정확성과 (과정의)간소에 대한 트레이드오프
+단위 통일,]]>
+      </description>
+      <content:encoded><![CDATA[<h1>4주차. 데이터 품질, 탐헌적 데이터 분석과 머신 러닝</h1>
+<h3>Lecture 7. 데이터 품질</h3>
+<p>데이터 클리닝</p>
+<ul>
+<li>왜곡: 처리과정에서 변질된 표본들</li>
+<li>선택편견: 값에 따른 표본의 가능도(likelihood)</li>
+<li>좌우검열: 데이터가 무한대일 때 시작과 끝을 어떻게 자를지</li>
+<li>의존성: 표본이 독립적인지 아닌지에 대한 판단</li>
+</ul>
+<ul>
+<li>정확성과 (과정의)간소에 대한 트레이드오프</li>
+<li>단위 통일, 중복 제거 등</li>
+</ul>
+<p>문제</p>
+<ul>
+<li>텍스트 파싱</li>
+<li>같은 엔티티 다른 표현(2 vs two, NYC vs NewYork)</li>
+<li>비구조적-구조적 전환시 primary key</li>
+<li>너무 길어서 잘리는 필드</li>
+<li>형식 문제(특히 날짜)</li>
+</ul>
+<p>수집</p>
+<ul>
+<li>과정에서 무결성 체크</li>
+<li>구조에 없는건 기본값</li>
+</ul>
+<p>전송</p>
+<ul>
+<li>신뢰할만한 프로토콜인가</li>
+<li>받은 데이터의 확인이 가능한가(checksum)</li>
+</ul>
+<p>분석의 어려움</p>
+<ul>
+<li>크기, 성능</li>
+<li>모델에 적용</li>
+<li>전문지식 부족</li>
+<li>다트판(때려맞추기)</li>
+<li>대충 경험(특정 상황에만 맞는 분석)</li>
+</ul>
+<p>품질 측정</p>
+<ul>
+<li>스키마 일치</li>
+<li>정확성, 접근성, 해석가능</li>
+<li>Lab2에서 정규식을 통한 형식 일치 확인</li>
+</ul>
+<p>용어?</p>
+<ul>
+<li>개체 식별(entity resolution)</li>
+<li>중복 검출(DeDup: Detection Duplicated)</li>
+</ul>
+<p>표준화</p>
+<ul>
+<li>USPS에서 제공하는 <a href="http://pe.usps.com/text/pub28/welcome.htm" target="_blank" rel="external">주소 표준가이드</a></li>
+<li>다른 필드 참고 등 식별 힌트</li>
+</ul>
+<h3>Lecture 8. 탐험적 데이터 분석과 머신 러닝</h3>
+<p>기술통계 vs 추론통계(<a href="https://ko.wikipedia.org/wiki/%ED%86%B5%EA%B3%84%ED%95%99#.EC.B6.94.EB.A1.A0_.ED.86.B5.EA.B3.84" target="_blank" rel="external">위키피디아</a>)</p>
+<p>업무에서의 목적</p>
+<ul>
+<li>간단한 통계</li>
+<li>가설 검증</li>
+<li>분류</li>
+<li>예측</li>
+</ul>
+<p><a href="http://www.amazon.com/dp/0201076160" target="_blank" rel="external">탐험적 데이터분석</a></p>
+<ul>
+<li>기본 테크닉 소개
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Five-number_summary" target="_blank" rel="external">Five-number summary</a></li>
+<li>box plot, stem and leaf diagram</li>
+</ul>
+</li>
+<li>통계요약의 문제: 같은 요약이라도 다른 데이터일 수 있다</li>
+</ul>
+<p>정규 분포</p>
+<ul>
+<li>평균, 표준편차</li>
+<li>중심극한정리(Central Limit Theorem): n이 무한대로 가면 정규분포에 가까워진다.</li>
+</ul>
+<p>다른 중요한 분포</p>
+<ul>
+<li><a href="https://ko.wikipedia.org/wiki/%ED%91%B8%EC%95%84%EC%86%A1_%EB%B6%84%ED%8F%AC" target="_blank" rel="external">프아송 분포</a></li>
+<li>이항 분포, 다항 분포</li>
+</ul>
+<p>Spark의 mllib</p>
+<ul>
+<li>NumPy와 함께 사용가능(pySpark &gt;= 0.9)</li>
+<li>여기에서는 영화평점 예측
+<ul>
+<li>collaborative filtering</li>
+<li>k rank = user(a) x movie feature(b)</li>
+</ul>
+</li>
+</ul>
+<h3>Lab 3. 텍스트 분석과 개체 식별</h3>
+<ol>
+<li>텍스트 유사성으로 개체 식별 - Bags of Words</li>
+</ol>
+<ul>
+<li><a href="http://darkpgmr.tistory.com/125" target="_blank" rel="external">Bag of Words 기법</a></li>
+</ul>
+<ol start="2">
+<li>텍스트 유사성으로 개체 식별- TF-IDF를 사용한 가중치 적용된 BOW</li>
+</ol>
+<ul>
+<li><a href="https://ko.wikipedia.org/wiki/TF-IDF" target="_blank" rel="external">TF-IDF</a></li>
+</ul>
+<ol start="3">
+<li>텍스트 유사성으로 개체 식별- 코사인 유사도(Cosine Similarity)</li>
+<li>역참조(inverted index)를 통한 효율적인 개체 식별</li>
+<li>그래프(plot)을 통한 결과 분석</li>
+</ol>
+<h3>Lab 3. 퀴즈</h3>
+<p>Lab 3에서 배운 것들 재확인</p>
+<hr>
+<p><a href="https://github.com/Kapeli/Dash-User-Contributions/tree/master/docsets/pyspark" target="_blank" rel="external">pySpark Docset</a></p>
+<ul>
+<li><a href="https://kapeli.com/dash" target="_blank" rel="external">Dash</a>용 pySpark API문서</li>
+<li>설정의 다운로드 -&gt; 좌하단의 사용자 제공(User Contibuted) -&gt; pySpark 검색</li>
+</ul>
+<hr>
+<ul>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week4Lec7.pdf" target="_blank" rel="external">Lecture 7 slides</a></li>
+<li><a href="https://courses.edx.org/c4x/BerkeleyX/CS100.1x/asset/Week4Lec8.pdf" target="_blank" rel="external">Lecture 8 slides</a></li>
+</ul>
+]]></content:encoded>
+      <comments>http://seoh.github.io/blog/2015/06/26/big-data-with-spark-4-week/#disqus_comments</comments>
+    </item>
     
     <item>
       <title><![CDATA[Spark로 빅데이터 입문, 3주차 노트]]></title>
@@ -1669,45 +1817,6 @@ Caike souza는 CoffeeScript의 어떤 점들이 좋은지, 왜 이게 프로젝�
 .right {text-align: right;}
 </style>]]></content:encoded>
       <comments>http://seoh.github.io/blog/2012/09/19/10-good-reasons-use-coffeescript/#disqus_comments</comments>
-    </item>
-    
-    <item>
-      <title><![CDATA[코딩 인터뷰 완전 분석 215쪽 문제 18.10 풀이]]></title>
-      <link>http://seoh.github.io/blog/2012/09/12/coding-interview-p215-18-10/</link>
-      <guid>http://seoh.github.io/blog/2012/09/12/coding-interview-p215-18-10/</guid>
-      <pubDate>Wed, 12 Sep 2012 12:52:00 GMT</pubDate>
-      <description>
-      <![CDATA[
-사전에 등장하고 길이가 같은 두 단어가 주어졌을 때, 한 번에 글자 하나만 바꾸어 한 단어를 다른 단어로 변환하는 프로그램을 작성하라. 변환 과정에서 만들어지는 각 단어도 사전에 있는 단어여야 한다.
-[실행 예]
-input : DAMP, LIKE
-output: DAMP -&gt; LAMP -&gt; LIMP -&gt; LIME -&gt; LIKE
-[사전 ]]>
-      </description>
-      <content:encoded><![CDATA[<blockquote>
-<p>사전에 등장하고 길이가 같은 두 단어가 주어졌을 때, 한 번에 글자 하나만 바꾸어 한 단어를 다른 단어로 변환하는 프로그램을 작성하라. 변환 과정에서 만들어지는 각 단어도 사전에 있는 단어여야 한다.
-[실행 예]
-input : DAMP, LIKE
-output: DAMP -&gt; LAMP -&gt; LIMP -&gt; LIME -&gt; LIKE
-[사전 데이터]
-네 글자 단어 - <a href="http://www.insightbook.co.kr/wp-content/uploads/2012/09/word4.txt" target="_blank" rel="external">word4</a>
-다섯 글자 단어 - <a href="http://www.insightbook.co.kr/wp-content/uploads/2012/09/word5.txt" target="_blank" rel="external">word5</a></p>
-</blockquote>
-<blockquote>
-<p>[심화 문제 - 풀지 않아도 됩니다]
-심화문제 1: 가장 적은 수의 단어를 써서 변환하도록 프로그램을 작성해봅시다.
-심화문제 2: 가장 많은 수의 단어를 써서 변환하도록 프로그램을 작성해봅시다. 단, 변환 과정에서 같은 단어가 두 번 나오면 안됩니다.</p>
-</blockquote>
-<p>가장 단순한 접근.
-모든 데이터를 메모리에 올려놓고, 앞에서부터 한글자씩 대입해서 사전에서 검색해보고 있으면 치환. 목적지에 도착할 때까지 반복. 혹시 한바퀴(문자열 길이)를 돌 때까지 치환할 단어가 없으면 찾을 수 없다고 판단. 일종의 Greedy로 답을 찾을 수는 있지만 가장 빠른 답인지 보장하지는 못한다.</p>
-<figure class="highlight coffee"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># synonym.coffee</span></span><br><span class="line">v = process.argv</span><br><span class="line"><span class="keyword">if</span> v.length &lt; <span class="number">5</span></span><br><span class="line">    process.exit -<span class="number">1</span></span><br><span class="line">n = parseInt v[<span class="number">3</span>]</span><br><span class="line">src = v[<span class="number">4</span>].toLowerCase()</span><br><span class="line">dst = v[<span class="number">5</span>].toLowerCase()</span><br><span class="line"></span><br><span class="line">data = <span class="built_in">require</span>(<span class="string">'fs'</span>).readFileSync <span class="string">'./word'</span> + n + <span class="string">'.txt'</span></span><br><span class="line">data = data.toString().split <span class="string">'\n'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> data.indexOf(dst) <span class="keyword">is</span> -<span class="number">1</span></span><br><span class="line">    <span class="built_in">console</span>.log <span class="string">'dst does not exist in data text'</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log src</span><br><span class="line"><span class="keyword">while</span> src <span class="keyword">isnt</span> dst</span><br><span class="line">    __ = src</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">0.</span>..n]</span><br><span class="line">        temp = src.substring(<span class="number">0</span>, i) + dst.charAt(i) + src.substring(i+<span class="number">1</span>,n)</span><br><span class="line">        <span class="keyword">if</span> __ <span class="keyword">isnt</span> temp <span class="keyword">and</span> data.indexOf(temp) <span class="keyword">isnt</span> -<span class="number">1</span></span><br><span class="line">            src = temp</span><br><span class="line">            <span class="built_in">console</span>.log <span class="string">"-&gt; <span class="subst">#&#123;src&#125;</span>"</span></span><br><span class="line">            <span class="keyword">if</span> src <span class="keyword">is</span> dst <span class="keyword">then</span> <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">if</span> __ <span class="keyword">is</span> src</span><br><span class="line">        <span class="built_in">console</span>.log <span class="string">"IMPOSSIBLE"</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
-<p>그리고 출력값</p>
-<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ coffee synonym.coffee 4 damp like</span><br><span class="line">damp</span><br><span class="line">-<span class="ruby">&gt; lamp</span><br><span class="line"></span>-<span class="ruby">&gt; limp</span><br><span class="line"></span>-<span class="ruby">&gt; lime</span><br><span class="line"></span>-<span class="ruby">&gt; like</span></span><br></pre></td></tr></table></figure>
-<p>소스에서는 생략했지만, 6회(두번째 루프) 만에 찾았다.</p>
-<p>Shorted Path나 Longest Path를 찾기 위해서는 edge에 index 정보를 기록하는 graph를 만들어야할꺼 같은데, 그러려면 모델링하는데만 O(n^2)만큼의 시간이 걸린다.</p>
-<p>좀 더 좋은 방법을 찾아보자.</p>
-]]></content:encoded>
-      <comments>http://seoh.github.io/blog/2012/09/12/coding-interview-p215-18-10/#disqus_comments</comments>
     </item>
     
   </channel>

@@ -1,4 +1,58 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-25T18:24:00.000Z" class="post__time">26th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/26/big-data-with-spark-4-week/">Spark로 빅데이터 입문, 4주차 노트</a></h1></header><div class="post__main echo"><h1>4주차. 데이터 품질, 탐헌적 데이터 분석과 머신 러닝</h1>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-28T17:46:17.000Z" class="post__time">29th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/29/big-data-with-spark-5-week/">Spark로 빅데이터 입문, 5주차 및 후기</a></h1></header><div class="post__main echo"><h1>5주차. 스파크로 머신러닝 시작</h1>
+<p>이번 주의 제목은 노트가 아니라 메모 겸 후기다.
+5주차에는 수업이 없고 과제와 퀴즈만 있다.</p>
+<h3>Lab 4. 스파크로 머신러닝 시작</h3>
+<p>영화 목록과 평점 이력을 트레이닝 셋으로 해서 내가 영화 평점을 몇 개 입력해서
+다른 영화의 내 평점을 예측하도록 기계학습을 해보는 과제이다.
+스파크의 머신러닝 라이브러리(MLlib)에서의 협업 필터링(Collaborative Filtering)
+에서는 ALS(Alternating Least Squares)라는 알고리즘을 사용하는데, 유사도를
+평가하는 데는 <a href="https://ko.wikipedia.org/wiki/%ED%8F%89%EA%B7%A0_%EC%A0%9C%EA%B3%B1%EA%B7%BC_%ED%8E%B8%EC%B0%A8" target="_blank" rel="external">평균 제곱근 오차(Root Mean Square Error; RMSE)</a>
+라는 방법을 사용한다. 정확한 의미는 이해하지 못했지만, 순서대로 따라가니 풀 수
+있었다.</p>
+<h3>Lab 4. Quiz</h3>
+<p>RMSE의 값에 대한 의미(예상값과 실제값이 같을 때의 결괏값)를 묻는 간단한
+문제들이었다.</p>
+<h1>후기</h1>
+<p><img src="/blog/images/big-data-with-spark-5-week/score.png" alt=""></p>
+<p>세 번째 과제를 진행하다가 TF-IDF에 대한 이해가 부족해서 자료를 찾다가 영어로 된
+글을 계속 읽다 보니 지루해져서 계속 미뤘는데, 결국 기한을 넘겨서 그냥 하던 데
+까지만 제출했다. 그래서 이번 과제는 알고리즘(ALS)에 대한 이해가 부족해도 그냥
+최대한 설명을 자세히 읽고 이리저리 시도해보다가 다 풀긴 했다.</p>
+<p>내용을 다 이해하지는 못했지만, 좋은 입문 강의다. 강의 시작에서 언급했듯이 파이썬
+기본 문법 정도만 알고 있으면 진행하는 데 큰 무리는 없을 것으로 생각한다. 어차피
+기초적인 개념부터 설명하는 강의라, 과제할 때 파이썬 문법의 문제인지 스파크를
+잘못 사용한 것인지에 대해 구분할 수 있을 정도면 되지만, 그렇지 않을 때는
+어렵다기보다 상당히 까다로울 것으로 생각한다.</p>
+<p>기초적인 개념부터 설명한다고 위에서 말했지만, 개념과 역사, 사례를 넓게 훑고
+지나가면서 책, 논문 등의 자료들을 레퍼런스로 많이 소개해서 깊게 알고 싶은 분야에
+대한 좋은 진입점을 제시해준다. 당연히 입문 강의는 그렇다고 생각하지만 A to Z로
+가르쳐주길 원하는 사람에게는 맞지 않는 강의다.</p>
+<p>가장 마음에 들었던 것들을 꼽자면, 하나는 모든 강의가 5분 내로 되어있다는 점이고
+나머지 하나는 <a href="/blog/2012/11/17/after-coursera-fppis-and-test">FPPiS</a>처럼 과제가
+단계별 테스트로 되어있다는 점이다.</p>
+<p>입문 강의라 많은 개념을 깊게 설명할 수 없으므로 개념별로 간단하게 설명을
+하기 지나가는데, 덕분에 지하철/버스에서 이동 중에 틈틈이 듣고 나중에 1.5배속으로
+빠르게 복기하면서 퀴즈를 풀면 두세 번 반복하는 느낌이라 오래(과제가 끝나기 전까지)
+기억에 남는다. 이동하는 시간은 어차피 낭비하는 시간이라고 생각했는데 꽤 요기하게
+쓰였다.</p>
+<p>그리고 단계별 테스트로 되어있다는 것도 입문 과목에서 큰 장점이라고 생각하는데,
+과제를 던져주고 알아서 해결하는 방법을 찾는 것도 중요하지만 가장 정석적인
+단계를 알려주기 위해서는 과제를 단계별로 나누고 각각의 단계를 어떻게 진행할지에
+대한 설명을 사이사이에 주고, 하나가 통과해야 그다음으로 넘어갈 수 있으니 다음
+문제를 보고 이전 문제의 의도를 가늠해볼 수 있기도 하다. 물론 하나가 막혀버리면
+그다음의 모든 것을 못한다는 게 단점이지만 그렇게 난이도 조절을 못 한 과제는
+아니라고 생각한다.</p>
+<hr>
+<p>사실 다 마치고 나서도 이제 무엇을 해야할지 막막하지만, 소재의 문제이지 방법에
+대한 것은 한번 과정을 거쳤으니 어떤 식으로 접근해야 할지에 대한 감을 대충 알았다.</p>
+<p>참고로 edX에서는 한 학교가 주제에 따라 코스웍을 제공하는 X시리즈 인증이 있는데,
+이 강의(CS100.1x)는 Berkeley에서 진행하는 빅데이터 코스인 BerkeleyX의 두 단계 중
+첫 번째다. 두 번째 단계(CS109.1x)는 <a href="https://www.edx.org/course/scalable-machine-learning-uc-berkeleyx-cs190-1x" target="_blank" rel="external">확장 가능한 머신 러닝(Scalable Machine Learning)</a>
+이라는 제목으로 29일부터 시작한다. 수학적 사고와 알고리즘 개념, 그리고 기본적인
+머신 러닝에 대한 개념이 필요하며, 알고리즘, 확률, 선형대수, 미적분을 접해본 적이
+있고, 파이썬 경험이 있거나 빠르게 익힐 수 있으면 된다. 듣긴 하겠지만, 이 과목처럼
+완주하겠다는 생각으로 듣는 것은 아니고 재미있는 부분까지만.</p>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/bigdata/" class="post__tag__link">bigdata</a></li><li class="post__tag__item"><a href="/blog/tags/spark/" class="post__tag__link">spark</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/big-data-with-spark-5-week.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article><article class="post"><header class="post__head"><time datetime="2015-06-25T18:24:00.000Z" class="post__time">26th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/26/big-data-with-spark-4-week/">Spark로 빅데이터 입문, 4주차 노트</a></h1></header><div class="post__main echo"><h1>4주차. 데이터 품질, 탐헌적 데이터 분석과 머신 러닝</h1>
 <h3>Lecture 7. 데이터 품질</h3>
 <p>데이터 클리닝</p>
 <ul>
@@ -956,63 +1010,7 @@ z-index: 300;
 blockquote p:first-child { text-align: initial !important; }
 blockquote p:last-child { text-align: right; }
 </style>
-</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/review/" class="post__tag__link">review</a></li><li class="post__tag__item"><a href="/blog/tags/scala/" class="post__tag__link">scala</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/pis-review.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article><article class="post"><header class="post__head"><time datetime="2014-09-09T15:00:00.000Z" class="post__time">10th Sep, 2014</time><h1 class="post__title"><a href="/blog/2014/09/10/prototyping-swipe-and-drag-gestures-with-framer-3/">Framer에서 swipe/drag 제스쳐 프로토타이핑하기</a></h1></header><div class="post__main echo"><blockquote>
-<h3>Translation of &quot;<a href="https://medium.com/@gem_ray/prototyping-swipe-and-drag-gestures-with-framer-3-2e405d50b600" target="_blank" rel="external">Prototyping swipe and drag gestures with Framer 3</a>&quot; into Korean, under the same license as the original.</h3>
-</blockquote>
-<p>우리는 <a href="https://www.potluck.it/" target="_blank" rel="external">Potluck</a>에서 iOS앱에서 인터렉션을 테스트해보고 프로토타이핑을 하기 위해 Framer.js를 사용하기 시작했다. Framer는 모바일과 데스크탑 앱에서의 인터렉션 프로토타이핑과 에니메이션을 위한 자바스크립트 프레임워크다. 쿼츠 콤포저(Quartz Composer)보다 러닝커브가 훨씬 낮고 아이폰과 데스크탑 양쪽에서 쉽게 실행할 수 있는 훌륭한 대안이다. 키노트에서 시작해서 실제같은 인터렉티브 프로토타입을 단계별로 만들 수 있다.</p>
-<p>자바스크립트 기반이기 때문에 특히 드래그나 스와이프같은 복잡한 제스쳐를 만들 때 좋다. 스와이프 거리에 따라 엘리먼트를 움직이거나 사라지게할 때 혹은 특정거리 이상 스와이프할 때 액션이 발생하도록 할 수 있다.</p>
-<p>신생 프로젝트라 예제나 문서들이 너무 없다. 그래서 배웠던 것들을 공유하려고 생각했다.</p>
-<hr>
-<p>시작하기 전에 타이핑하기 귀찮은 사람을 위해 [CodePen](http://codepen.io/seoh/full/AqycD에 완성본을 올려놨다.</p>
-<h1>Activate on release</h1>
-<p>다른 액션을 가진 테이블 셀들로 간단한 예제를 시작해보자.</p>
-<p>일단 보통 아이폰 스크린을 표시하기 위한 컨테이너 뷰를 만들어보자. 시스템 상태바를 가진 웹앱을 프로토타이핑하기 위해 높이는 598px로 정했다. (역주, 원문에서는 1096px였지만 웹에서 확인하기 좋게 절반으로 줄였다.)</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="teAkE" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>셀에서 사용자에게 보이는 부분을 정한 컨테이너를 만들고, 화면 밖에서 슬라이드하면 셀이 나타나도록 할 것이다.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="hrvAG" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>이렇게 보일 것이다.</p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/1.png" alt=""></p>
-<p>이제 셀에 드래그를 추가해보자.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="lqmjo" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>원하는 기능은 아니지만 어디로든 드래그할 수 있다.</p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/2.gif" alt=""></p>
-<hr>
-<p>더 구체적인 제스쳐를 구현하기 위해 드래그 이벤트 핸들러를 사용할 수도 있다. 뭔가 드래그할 때 세가지 이벤트가 발생한다. <code>Events.DragStart</code>는 드래그를 시작할 때 한번, <code>Events.DragEnd</code>는 드래그를 놓았을 때 한번 발생한다. <code>Events.DragMove</code>는 마우스나 손가락을 움직일 때 계속 발생한다.</p>
-<p>draggable은 &quot;speed&quot; 속성을 갖는데 마우스 움직임에 따라 어느 정도의 속도로 움직일지 결정한다. 속도를 <code>0</code>으로 설정하면 물체가 해당하는 방향(축)으로 이동하지 않게 된다.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="DKtdp" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>드래그가 끝났을 때 무엇을 할지 정할 수도 있는데, 여기에서는 원래 물체를 자리로 돌아가게 해보자.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="GHwLo" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/3.gif" alt=""></p>
-<hr>
-<p>이제 화면 밖의 엘리먼트가 드래그할 때 나타나도록 해보자. 그 엘리먼트는 셀 컨테이너의 차일드 뷰가 될 것이고(그래서 셀과 함께 움직일 것이고) 그냥 화면 밖에 놓도록 하겠다.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="liKwL" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>이 액션 바를 추가한 다음에 셀을 왼쪽으로 끌면 화면 오른쪽 끝에서 나타나는걸 볼 수 있다.</p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/4.gif" alt=""></p>
-<p>좀 재미있는걸 넣어보자. 드래그 핸들러는 액션 바를 조금이라도 움직일 때마다 실행되는데, 얼마나 셀을 움직이는지에 따라 색깔을 바꾸게 만들 수 있다.</p>
-<p>(얼마나 셀을 움직였는지에 대한)범위를 다른 (바의 색상)범위로 바꾸는 것은 <code>Utils.mapRange</code> 함수를 통해 쉽게 할 수 있다.</p>
-<p>(역주: 원문은 원래 framerjs 2를 기준으로 작성되어 <a href="http://processing.org/" target="_blank" rel="external">Proccessing 프레임워크</a>의 <code>map_range</code>라는 함수를 사용했는데 중요한 정보는 아니다.)</p>
-<p>이 함수에서는 <code>[low1, high1]</code> 범위에 있는 value를 <code>[low2, high2]</code> 범위에서의 같은 위치(비율)로 변환해준다. 이제 셀의 <em>x축 좌표</em>를 액션 바의 <em>투명도</em>로 바꿔보자.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="DHBev" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>셀을 드래그할 때 액션 바의 색은 다음과 같이 변한다.</p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/5.gif" alt=""></p>
-<p>충분히 액션 바를 드래그했을 때는 그대로 열려있도록 만들고 싶다. 이걸 하려면, DragEnd 핸들러에서 얼마나 드래그되었는지 확인하고 특정 너비를 넘었다면 계속 열려있도록 해보자.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="qCdrl" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/6.gif" alt=""></p>
-<h1>Activate on threshold</h1>
-<p>탭을 밀었을 때 계속 열려있도록 해봤다. 탭까지 가지 않고 액션을 할 수는 없을까? iOS 6의 당겨서 새로고침이 좋은 예다. 충분히 당기면 탭까지 가지 않아도 새로고침이 일어난다. (역주, 여기에서는 특정 길이만큼 드래그 후 이벤트 발생으로 애니메이션을 실행하는 것까지만 예제로 한다.)</p>
-<p>위아래로 움직이는 두번째 셀을 만들어보자.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="udyBe" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p>셀을 100px 아래로 내리면 쪼그라들게 해보자. 일단 이렇게 시도해봤다.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="ekgDo" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/7.gif" alt=""></p>
-<p>애니메이션이 좀 산만하다. 드래그할 때마다 계속 DragMove 이벤트가 발생하고 계속 애니메이션을 시작하려고 한다. 그래서 조건이 만족될 때 딱 한번만 발생하도록 해보자.</p>
-<p data-height="630" data-theme-id="0" data-slug-hash="trboC" data-default-tab="js" data-user="seoh" class="codepen"></p>
-<p><img src="/blog/images/prototyping-swipe-and-drag-gestures-with-framer-3/8.gif" alt=""></p>
-<p>(역주, 원문에서는 Drag와 Animate 기능이 충돌해서 제대로 Animate가 작동하지 않아 Drag하는 레이어와 Animate되는 레이어를 따로 뒀는데 버그가 수정되었는지 잘 작동해서 그 이하 부분은 생략했다.)</p>
-<hr>
-<h1>아이폰에서 테스트</h1>
-<p>Framer Studio 1.7에서 Mirror라는 굉장히 편한 기능이 추가되었다. Studio에서 작업한 내용을 저장하고 Mirror 버튼을 누르면 작업중인 컴퓨터를 자동으로 서버로 사용해서 외부에서 접근할 수 있는 주소를 생성해준다. (역주, 원문에서는 Dropbox Public folder에 대한 내용이었지만 Mirror 기능이 더 유용하다고 생각해서 변경했다.)</p>
-<script async src="http://codepen.io/assets/embed/ei.js"></script></div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/framerjs/" class="post__tag__link">framerjs</a></li><li class="post__tag__item"><a href="/blog/tags/prototyping/" class="post__tag__link">prototyping</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/prototyping-swipe-and-drag-gestures-with-framer-3.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/blog/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/review/" class="post__tag__link">review</a></li><li class="post__tag__item"><a href="/blog/tags/scala/" class="post__tag__link">scala</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/pis-review.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><a title="Next" href="/blog/page/2/" class="page-menu__link icon-arrow-right"></a></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
 function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
 e=o.createElement(i);r=o.getElementsByTagName(i)[0];
 e.src='//www.google-analytics.com/analytics.js';

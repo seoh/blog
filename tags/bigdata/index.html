@@ -1,4 +1,58 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>bigdata - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-25T18:24:00.000Z" class="post__time">26th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/26/big-data-with-spark-4-week/">Spark로 빅데이터 입문, 4주차 노트</a></h1></header><div class="post__main echo"><h1>4주차. 데이터 품질, 탐헌적 데이터 분석과 머신 러닝</h1>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>bigdata - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-06-28T17:46:17.000Z" class="post__time">29th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/29/big-data-with-spark-5-week/">Spark로 빅데이터 입문, 5주차 및 후기</a></h1></header><div class="post__main echo"><h1>5주차. 스파크로 머신러닝 시작</h1>
+<p>이번 주의 제목은 노트가 아니라 메모 겸 후기다.
+5주차에는 수업이 없고 과제와 퀴즈만 있다.</p>
+<h3>Lab 4. 스파크로 머신러닝 시작</h3>
+<p>영화 목록과 평점 이력을 트레이닝 셋으로 해서 내가 영화 평점을 몇 개 입력해서
+다른 영화의 내 평점을 예측하도록 기계학습을 해보는 과제이다.
+스파크의 머신러닝 라이브러리(MLlib)에서의 협업 필터링(Collaborative Filtering)
+에서는 ALS(Alternating Least Squares)라는 알고리즘을 사용하는데, 유사도를
+평가하는 데는 <a href="https://ko.wikipedia.org/wiki/%ED%8F%89%EA%B7%A0_%EC%A0%9C%EA%B3%B1%EA%B7%BC_%ED%8E%B8%EC%B0%A8" target="_blank" rel="external">평균 제곱근 오차(Root Mean Square Error; RMSE)</a>
+라는 방법을 사용한다. 정확한 의미는 이해하지 못했지만, 순서대로 따라가니 풀 수
+있었다.</p>
+<h3>Lab 4. Quiz</h3>
+<p>RMSE의 값에 대한 의미(예상값과 실제값이 같을 때의 결괏값)를 묻는 간단한
+문제들이었다.</p>
+<h1>후기</h1>
+<p><img src="/blog/images/big-data-with-spark-5-week/score.png" alt=""></p>
+<p>세 번째 과제를 진행하다가 TF-IDF에 대한 이해가 부족해서 자료를 찾다가 영어로 된
+글을 계속 읽다 보니 지루해져서 계속 미뤘는데, 결국 기한을 넘겨서 그냥 하던 데
+까지만 제출했다. 그래서 이번 과제는 알고리즘(ALS)에 대한 이해가 부족해도 그냥
+최대한 설명을 자세히 읽고 이리저리 시도해보다가 다 풀긴 했다.</p>
+<p>내용을 다 이해하지는 못했지만, 좋은 입문 강의다. 강의 시작에서 언급했듯이 파이썬
+기본 문법 정도만 알고 있으면 진행하는 데 큰 무리는 없을 것으로 생각한다. 어차피
+기초적인 개념부터 설명하는 강의라, 과제할 때 파이썬 문법의 문제인지 스파크를
+잘못 사용한 것인지에 대해 구분할 수 있을 정도면 되지만, 그렇지 않을 때는
+어렵다기보다 상당히 까다로울 것으로 생각한다.</p>
+<p>기초적인 개념부터 설명한다고 위에서 말했지만, 개념과 역사, 사례를 넓게 훑고
+지나가면서 책, 논문 등의 자료들을 레퍼런스로 많이 소개해서 깊게 알고 싶은 분야에
+대한 좋은 진입점을 제시해준다. 당연히 입문 강의는 그렇다고 생각하지만 A to Z로
+가르쳐주길 원하는 사람에게는 맞지 않는 강의다.</p>
+<p>가장 마음에 들었던 것들을 꼽자면, 하나는 모든 강의가 5분 내로 되어있다는 점이고
+나머지 하나는 <a href="/blog/2012/11/17/after-coursera-fppis-and-test">FPPiS</a>처럼 과제가
+단계별 테스트로 되어있다는 점이다.</p>
+<p>입문 강의라 많은 개념을 깊게 설명할 수 없으므로 개념별로 간단하게 설명을
+하기 지나가는데, 덕분에 지하철/버스에서 이동 중에 틈틈이 듣고 나중에 1.5배속으로
+빠르게 복기하면서 퀴즈를 풀면 두세 번 반복하는 느낌이라 오래(과제가 끝나기 전까지)
+기억에 남는다. 이동하는 시간은 어차피 낭비하는 시간이라고 생각했는데 꽤 요기하게
+쓰였다.</p>
+<p>그리고 단계별 테스트로 되어있다는 것도 입문 과목에서 큰 장점이라고 생각하는데,
+과제를 던져주고 알아서 해결하는 방법을 찾는 것도 중요하지만 가장 정석적인
+단계를 알려주기 위해서는 과제를 단계별로 나누고 각각의 단계를 어떻게 진행할지에
+대한 설명을 사이사이에 주고, 하나가 통과해야 그다음으로 넘어갈 수 있으니 다음
+문제를 보고 이전 문제의 의도를 가늠해볼 수 있기도 하다. 물론 하나가 막혀버리면
+그다음의 모든 것을 못한다는 게 단점이지만 그렇게 난이도 조절을 못 한 과제는
+아니라고 생각한다.</p>
+<hr>
+<p>사실 다 마치고 나서도 이제 무엇을 해야할지 막막하지만, 소재의 문제이지 방법에
+대한 것은 한번 과정을 거쳤으니 어떤 식으로 접근해야 할지에 대한 감을 대충 알았다.</p>
+<p>참고로 edX에서는 한 학교가 주제에 따라 코스웍을 제공하는 X시리즈 인증이 있는데,
+이 강의(CS100.1x)는 Berkeley에서 진행하는 빅데이터 코스인 BerkeleyX의 두 단계 중
+첫 번째다. 두 번째 단계(CS109.1x)는 <a href="https://www.edx.org/course/scalable-machine-learning-uc-berkeleyx-cs190-1x" target="_blank" rel="external">확장 가능한 머신 러닝(Scalable Machine Learning)</a>
+이라는 제목으로 29일부터 시작한다. 수학적 사고와 알고리즘 개념, 그리고 기본적인
+머신 러닝에 대한 개념이 필요하며, 알고리즘, 확률, 선형대수, 미적분을 접해본 적이
+있고, 파이썬 경험이 있거나 빠르게 익힐 수 있으면 된다. 듣긴 하겠지만, 이 과목처럼
+완주하겠다는 생각으로 듣는 것은 아니고 재미있는 부분까지만.</p>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/bigdata/" class="post__tag__link">bigdata</a></li><li class="post__tag__item"><a href="/blog/tags/spark/" class="post__tag__link">spark</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/big-data-with-spark-5-week.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article><article class="post"><header class="post__head"><time datetime="2015-06-25T18:24:00.000Z" class="post__time">26th Jun, 2015</time><h1 class="post__title"><a href="/blog/2015/06/26/big-data-with-spark-4-week/">Spark로 빅데이터 입문, 4주차 노트</a></h1></header><div class="post__main echo"><h1>4주차. 데이터 품질, 탐헌적 데이터 분석과 머신 러닝</h1>
 <h3>Lecture 7. 데이터 품질</h3>
 <p>데이터 클리닝</p>
 <ul>

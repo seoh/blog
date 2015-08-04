@@ -44,8 +44,8 @@ Haskell로 도전해보았다. 일단 문제를 단순화시켜서 괄호 없는
 
 BNF라는 명칭만 기억나고 정확한 내용은 기억나지 않지만 비슷하게 옮겨보자면
 
-- molecules  = monoatomic  | molecules
-- monoatomic = atom amount | atom
+- molecules  = homoatomic  | molecules
+- homoatomic = atom amount | atom
 
 이제 이걸 적용할 수 있는 파서를 만들어보자. 일단 파서의 적절한 타입을
 만들어야 하는데, 함수형에서는 어떤 흐름을 기록하는데 자주 쓰이는
@@ -161,7 +161,7 @@ ES6에서 생긴 상수/변수인 `const`와 `let`은 호이스팅(hoisting)되�
 소스가 약간 길어지지만 감수하면서 만들자면 다음과 같다.
 
 ``` js JavaScript
-const amount = (str) => or(and(digit, amount), digit);
+const amount = (str) => or(and(digit, amount), digit)(str);
 ```
 
 하지만 0개 이상을 읽는 경우가 이번뿐이 아니므로 이걸 좀 다듬어보자.

@@ -24,11 +24,11 @@ Maybe
 하는 이야기는 잠시 미뤄두고 간단하게 Maybe를 만들어보자. Maybe의 정의를 간단하게
 표현해보자면 다음과 같다.
 
-``` haskell
+``` haskell Haskell
 data Maybe a = Just a | Nothing
 ```
 
-``` js
+``` js JavaScript
 class Maybe {
   toString() { throw new Error("Must be implemented."); }
 }
@@ -68,7 +68,7 @@ const nothing = new Nothing();
 
 1번의 구현은 간단하다.
 
-``` js
+``` js JavaScript
 ///// unit : a -> Maybe a
 const unit = (x) => new Just(x)
 ```
@@ -77,7 +77,7 @@ const unit = (x) => new Just(x)
 있으니 바로 적용하기 어렵다. 그러니 2번처럼 값을 처리하는 함수를 적용할 수 있는
 기능을 구현해보자.
 
-``` js
+``` js JavaScript
 const isNothing = (m) =>
   m.constructor.name === "Nothing"
 
@@ -94,7 +94,7 @@ console.log( fmap(nothing, doub).toString() ); // Nothing
 
 Maybe의 값이 함수일 경우에 그 함수를 다른 Maybe의 값에 적용해보자.
 
-``` js
+``` js JavaScript
 ///// appl : Maybe (a -> b), Maybe a -> Maybe b
 const appl = (mfn, ma) =>
   isNothing(mfn) || isNothing(ma)
@@ -108,7 +108,7 @@ console.log( appl(mdoub, unit(1)).toString() ); // Just 2
 
 그런데 모양을 보면 `fmap`과 비슷해서 `fmap`을 재사용해서 구현할 수도 있다.
 
-``` js
+``` js JavaScript
 const appl2 = (mfn, ma) =>
   isNothing(mfn)
     ? new Nothing()
@@ -120,7 +120,7 @@ console.log( appl2(mdoub, unit(1)).toString() ); // Just 2
 
 이제 마지막으로 함수의 결과 자체가 Maybe일 경우를 생각해보자.
 
-``` js
+``` js JavaScript
 ///// bind :  Maybe a, (a -> Maybe b) -> Maybe b
 const bind = (ma, fn) =>
   isNothing(ma)
@@ -147,14 +147,14 @@ F, A, M with Array
 것이 있다. 처음에는 Haskell 식으로 타입을 적었다가 이해하기 편하도록 수정했더니
 무슨 언어인지 모를 내용이 되긴 했지만.
 
-``` js
+``` js JavaScript
 ///// fmap : Maybe a, (a -> b) -> Maybe b
 ```
 
 값을 가지고 있는 타입과 값을 변환하는 함수를 받아서 다른 값을 가지고 있는
 타입으로 변환해준다. 이걸 이해하기 좋게 조금 수정해보자면,
 
-``` js
+``` js JavaScript
 ///// amap : Array a, (a -> b) -> Array b
 const amap = (arr, fn) => arr.map(fn);
 console.log( amap([1,2,3], (n => String(n))) );  // [ '1', '2', '3' ]
@@ -169,14 +169,14 @@ Functor라고 부른다. Array에서는 그런 연산을 해주는 `map` 메소�
 
 순서대로 `fmap` 다음에 구현했던 `appl`을 이야기할 차례다.
 
-``` js
+``` js JavaScript
 ///// appl : Maybe (a -> b), Maybe a -> Maybe b
 ```
 
 applicative라는 표현 그대로 어딘가에 적용할 수 있는 Functor이다. 즉, 함수를
 가지고 있는 Functor.
 
-``` js
+``` js JavaScript
 const doub = d => d * 2;
 const incr = d => d + 1;
 
@@ -197,7 +197,7 @@ console.log(
 
 ### 3. Monad
 
-``` js
+``` js JavaScript
 ///// bind :  Maybe a, (a -> Maybe b) -> Maybe b
 ```
 
@@ -205,7 +205,7 @@ JavaScript에서는 [lodash](https://lodash.com/)같은 라이브러리를 사�
 사람에게 익숙하지 않은 개념일 수 있지만, 다른 함수형 언어들을 써본 사람이라면
 Sequence 종류에서 기본적으로 지원해주는 익숙한 개념이 있다.
 
-``` js
+``` js JavaScript
 const flatMap = function(fn) {
   return this.map(fn).reduce((r,a) => r.concat(a), [])
 };

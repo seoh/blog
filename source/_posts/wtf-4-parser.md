@@ -15,7 +15,7 @@ tags:
 Codewars에 분자식(문자열)에서 원자들이 몇 개인지 세는 문제가 있었다. 이미
 제출한 답은 다음과 같은 구조였다.
 
-``` js
+``` js JavaScript
 const token = (str) => str.match(regToken);
 const lexer = (arr) => arr.reduce((r,t) => ..., [])
 const parse = (form) => {
@@ -58,7 +58,7 @@ BNF라는 명칭만 기억나고 정확한 내용은 기억나지 않지만 비�
 규칙에 맞는 결과물 `T`를 가져온 뒤 남은 문자열과 함께 돌려주는 일종의 State같은
 타입을 Parser라고 정의해서 사용할 것이다.
 
-``` js
+``` js JavaScript
 // type Parser[T] = String -> (T, String)
 ```
 
@@ -68,7 +68,7 @@ BNF라는 명칭만 기억나고 정확한 내용은 기억나지 않지만 비�
 내가 원하는 것이 맞는지 글자를 소모하지 않고 확인할 수 있는 기능과 글자를
 소모해서 원하는 것인지 확인하는 기능 두 가지를 통해 tokenizer를 구현할 수 있다.
 
-``` js
+``` js JavaScript
 ///// Parser => Parser
 const ahead   = p => (str) => p(str) ? ['', str] : [];
 ///// Parser => Parser
@@ -82,7 +82,7 @@ const satisfy = p => (str) => p(str) ? [str[0], str.substr(1)] : [];
 
 이제 다음 글자가 대문자라는 파서를 만들려면 다음과 같이 만들면 된다.
 
-``` js
+``` js JavaScript
 const upper = satisfy(ch => 'A' <= ch[0] && ch[0] <= 'Z');
 
 console.log( upper("H") ); // [ 'H', '' ]
@@ -92,7 +92,7 @@ console.log( upper("H") ); // [ 'H', '' ]
 규칙과 그것을 합성할 수 있는 기능이 필요하다. 물론 합성 기능은 다음 글자가
 소문자라는 파서를 만들었을 때 그 파서와 합성하는 데 사용할 수도 있다.
 
-``` js
+``` js JavaScript
 // (Parser, Parser) -> Parser
 const and = (pa, pb) => (str) => {
   const ra = pa(str);
@@ -108,7 +108,7 @@ const and = (pa, pb) => (str) => {
 만들어주는 파서를 생성할 수 있게 되었다. 물론 둘 중 하나라도 실패하면 실패`[]`가
 리턴된다. 이걸 사용해서 소문자 확인과 결합해보자.
 
-``` js
+``` js JavaScript
 const lower = satisfy(ch => 'a' <= ch[0] && ch[0] <= 'z');
 
 console.log(and(upper, lower)("Mg")); // [ 'Mg', '' ]
@@ -116,7 +116,7 @@ console.log(and(upper, lower)("Mg")); // [ 'Mg', '' ]
 
 그리고 앞서 만들어놓은 `ahead`와 더불어 원하는 조건인지 확인을 합성할 수도 있다.
 
-``` js
+``` js JavaScript
 const chr   = ahead(str => str.length > 0);
 
 const upper = and(chr, satisfy(ch => 'A' <= ch[0] && ch[0] <= 'Z'));
@@ -128,7 +128,7 @@ const digit = and(chr, satisfy(ch => '0' <= ch[0] && ch[0] <= '9'));
 수 있는 파서들이 만들어졌다. 이제 원소기호를 파싱할 때 대문자와 소문자가
 연속으로 올 때도 있지만, 대문자만 존재할 수 있으니 `or`를 만들어보자.
 
-``` js
+``` js JavaScript
 ///// (Parser, Parser) -> Parser
 const or = (pa, pb) => (str) => {
   const r = pa(str);
@@ -142,7 +142,7 @@ const or = (pa, pb) => (str) => {
 파서가 실패할 경우에는 그 자체가 실패의 결괏값이므로 그냥 넘겨주면 된다. 이걸로
 원소기호를 가져와 보자.
 
-``` js
+``` js JavaScript
 const atom   = or(and(upper, lower), upper);
 
 console.log(atom("Mg")); // [ 'Mg', '' ]
@@ -152,7 +152,7 @@ console.log(atom("H"));  // [ 'H', '' ]
 이제 둘 다 만족하게 되었다. 그럼 다음은 숫자를 0개 이상 받을 때인데, 재귀적인
 규칙이라 앞에서 구현한 것들보다 약간 복잡해진다.
 
-``` js
+``` js JavaScript
 const amount = or(and(digit, amount), digit);
 ```
 
@@ -160,20 +160,20 @@ ES6에서 생긴 상수/변수인 `const`와 `let`은 호이스팅(hoisting)되�
 만들면 작동하지 않는다. 그래서 함수가 실행된 뒤에 `amount`를 읽을 수 있도록
 소스가 약간 길어지지만 감수하면서 만들자면 다음과 같다.
 
-``` js
+``` js JavaScript
 const amount = (str) => or(and(digit, amount), digit);
 ```
 
 하지만 0개 이상을 읽는 경우가 이번뿐이 아니므로 이걸 좀 다듬어보자.
 
-``` js
+``` js JavaScript
 const many = (p) => (str) => or(and(p, many(p)), p)(str);
 const amount = many(digit);
 ```
 
 이제 `many`를 사용하면 나머지를 완성할 수 있다.
 
-``` js
+``` js JavaScript
 const homo   = or(and(atom, amount), atom);
 const mole   = many(homo);
 ```
@@ -183,7 +183,7 @@ const mole   = many(homo);
 결과를 다듬어보자.
 
 
-``` js
+``` js JavaScript
 const parse  = (p) => (str) => or(p, (str) => ['', str])(str)[0];
 console.log(parse(mole)("H2O")); // H2O
 ```
@@ -207,6 +207,7 @@ Haskell로 문제를 풀어보면서 모르는 게 있어서 리뷰하려고 다
 열리는데, 함수형이나 Haskell 입문에 관심 있는 분들께는 시각적인 어려움을
 참작하고라도 매우 도움이 되는 강의니 추천한다.
 
+ps, 구직중
 
 ---
 

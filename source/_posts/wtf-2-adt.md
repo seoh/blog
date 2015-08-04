@@ -48,7 +48,7 @@ Nat
 ---
 
 
-``` haskell
+``` haskell Haskell
 data Nat = Zero | Succ Nat
 ```
 
@@ -57,7 +57,7 @@ Haskell에서 대수 자료형 Nat을 정의해보았다. 코드를 정확히 �
 경우가 될 수 있는 Nat이라는 섬 타입이다. 문제에서는 `Zero`와 `Succ`에 대해서
 정확히 같지는 않지만, 다음과 비슷하게 주어진다.
 
-``` js
+``` js JavaScript
 const zero = () => {};
 const succ = (nat) => ( ()=>nat );
 ```
@@ -66,7 +66,7 @@ const succ = (nat) => ( ()=>nat );
 통해 Succ에서 받은 이전 값을 다시 추출하는 과정을 함수 호출로 대신했다.  패턴
 매칭을 통해 Nat을 정숫값으로 변환하는 과정도 JavaScript로 대신해보자.
 
-``` haskell
+``` haskell Haskell
 toInt :: Nat -> Int
 toInt Zero = 0
 toInt (Succ nat) = 1 + toInt nat
@@ -76,7 +76,7 @@ toInt (Succ nat) = 1 + toInt nat
 생성할 때 받았던 이전 값 `nat`을 패턴 매칭을 통해 추출해서 다시 `toInt`로 넘겨서
 Nat은 하나씩 이전값을 보고 `Zero`가 나올 때까지 결괏값을 하나씩 증가시킨다.
 
-``` haskell
+``` haskell Haskell
 toInt (Succ (Succ (Succ Zero)))
 ```
 
@@ -84,7 +84,7 @@ toInt (Succ (Succ (Succ Zero)))
 `1 + (1 + (1 + 0)`이 되고 `3`을 리턴하게 된다. 그렇다면 이걸 JavaScript로
 구현하면
 
-``` js
+``` js JavaScript
 const toInt = (nat) =>
   nat === zero
     ? 0
@@ -95,7 +95,7 @@ console.log(toInt(succ(succ(succ(zero))))); // 3
 
 이런 식으로 재귀를 통해 구현할 수 있다. 혹은 앞에서 언급했던 트램펄린과 비슷하게
 
-``` js
+``` js JavaScript
 const toInt = (nat) => {
   let count = 0;
   for(; nat !== zero ; nat = nat(), count++);
@@ -116,7 +116,7 @@ Codewars에 대수 자료형을 다룬 문제가 하나 더 있다. Nat처럼 �
 제공하는 유명한 자료형이다.
 
 
-``` haskell
+``` haskell Haskell
 data List a = Cons { head :: a , tail :: List a}
             | Nil
 ```
@@ -129,7 +129,7 @@ List는 `Cons` 혹은 `Nil`이 될 수 있는 섬 타입이다. 그리고 `Cons`
 C언어에서처럼 고정된 길이의 index를 가지는 배열을 Array(혹은 Vector)라고 부르고
 앞서 말했듯 이런 Cons 구조를 List(Sequence)라고 부르는 경우가 많다.
 
-``` js
+``` js JavaScript
 function Cons(head, tail) {
   this.head = head;
   this.tail = tail;
@@ -143,7 +143,7 @@ const Nil = new Cons(null, ()=> {
 구현했는데 이번에는 간단하게 속성(property)으로만 구현해서 제공된다. 앞에서의
 Nat과 비슷한 정수의 스트림을 구현해보면
 
-``` haskell
+``` haskell Haskell
 int :: Int -> List Int
 int n = Cons n tail
   where tail = int (n + 1)
@@ -153,7 +153,7 @@ int n = Cons n tail
 바로 `Cons 0 tail`을 만들 뿐 무한루프를 돌지 않는다. JavaScript에서 비슷하게
 만들어보자면
 
-``` js
+``` js JavaScript
 const int = (n) => new Cons(n, ()=>int(n+1))
 
 int(0)        // { head: 0, tail: [Function] }
@@ -165,7 +165,7 @@ int(0).tail() // { head: 1, tail: [Function] }
 List(Cons|Nil)로 변환을 통해 Cons를 생성할 수 있도록 해보자.
 
 
-``` haskell
+``` haskell Haskell
 fromArray :: [a] -> List a
 fromArray [] = Nil
 fromArray (x:xs) = Cons x (fromArray xs)
@@ -175,7 +175,7 @@ fromArray (x:xs) = Cons x (fromArray xs)
 만든다는 연산자 `:`이다. 참고로 `++`의 경우 두 개의 Cons를 연결(concat)한다.
 이걸 또 JavaScript로 구현해보면 다음과 같다.
 
-``` js
+``` js JavaScript
 const fromArray = (arr = []) => {
   if(arr.length === 0) return Nil;
   else return new Cons(arr.shift(), ()=>fromArray(arr.slice()));
@@ -195,7 +195,7 @@ cons = cons.tail();
 
 이제 Sequence 타입에 항상 적용해보는 filter와 map을 구현해보자
 
-``` haskell
+``` haskell Haskell
 filter' :: (a -> Bool) -> List a -> List a
 filter' f Nil = Nil
 filter' f (Cons x xs)
@@ -208,7 +208,7 @@ map' f Nil = Nil
 map' f (Cons x xs) = Cons (f x) (map' f xs)
 ```
 
-``` js
+``` js JavaScript
 const filter = (f, cons) => {
   if(cons === Nil) return Nil;
   else if(!f(cons.head)) return filter(f, cons.tail());
@@ -230,7 +230,7 @@ const prt = (cons) => {
 
 출력이 귀찮아서 `prt` 함수를 따로 만들었다. 이제 확인을 해보면
 
-``` js
+``` js JavaScript
 const even = (d) => d % 2 === 0;
 const doub = (d) => d * 2;
 const toFive = fromArray([1,2,3,4,5]);

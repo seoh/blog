@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>WTF - 2. 대수 자료형 (Algebraic Data Type) - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-08-04T13:57:53.000Z" class="post__time">4th Aug, 2015</time><h1 class="post__title"><a href="/blog/2015/08/04/wtf-2-adt/">WTF - 2. 대수 자료형 (Algebraic Data Type)</a></h1></header><div class="post__main echo"><blockquote>
+<p>What is the Functional?</p>
+<ol>
+<li><a href="/blog/2015/08/04/wtf-1-intro/">Introduction</a></li>
+<li><a href="/blog/2015/08/04/wtf-2-adt/">Algebraic Data Type</a></li>
+<li><a href="/blog/2015/08/04/wtf-3-fam/">Maybe or Not</a></li>
+<li><a href="/blog/2015/08/04/wtf-4-parser/">Monadic Molecule Parser</a></li>
+</ol>
+</blockquote>
+<blockquote>
+<p>컴퓨터 프로그래밍에서, 특히 함수형 프로그래밍과 타입 이론에서 대수 자료형은
+합성 타입의 한 종류이며 즉, 다른 타입들을 모아서 형성된 타입이다. 제일 보편적인
+두 경우로는 프로덕트 타입(product type. 예를 들어 튜플과 레코드)과 섬 타입(sum
+type. 혹은 Tagged Union이라 불린다)이 있다.
+(중략)
+대수 자료형의 값들을 패턴 매칭을 통해 분석해서 생성자나 필드 이름을 통해 값을
+알아내거나 내부의 값을 추출해낸다. 대수 자료형은 70년대 에든버러 대학에서 개발한
+작은 함수형 언어인 Hope에서 소개됐다.</p>
+<p><a href="https://en.wikipedia.org/wiki/Algebraic_data_type" target="_blank" rel="external">Algebraic data type - Wikipedia</a></p>
+</blockquote>
+<p>프로덕트 타입은 여러 타입을 한 번에 쓸 수 있는 구조(튜플의 경우 (A, B), 레코드의
+경우 {A: B}같은 형식)이며 섬 타입은 열거형(Union) 비슷한 이름을 갖는 것에서도
+추정할 수 있듯 여러 타입 중 하나를 쓸 수 있는 구조다. 여러 언어에서 예전부터
+혹은 최근에 도입된 자료형 중에서 Maybe, Option, Optional 등의 이름으로 값을
+갖거나(Just) 혹은 값이 없거나(Nothing, None, Null)로 구분되는 자료형이 가장
+익숙하지 않을까 싶다. 설명을 하다 보니 OOP에서 추상 클래스와 상속받은 클래스들간
+메소드 오버로딩을 통한 다형성과 비슷한 느낌이 든다.</p>
+<p>위키피디아의 내용처럼 패턴 매칭에서 주로 사용되는데 패턴 매칭을 지원하지 않는
+JavaScript에서는 적용할 수 없는 개념이고 제대로 사용할 수 없으므로 이해하기
+어려운 개념이기도 하다. 그런데 굳이 처음부터 잘 이해하고 갈 필요가 있나? 그냥
+어떤 것인지 알아보고 JavaScript로 한번 구현해보면 제대로는 아니어도 어떤 것인지
+정도는 감을 잡을 수 있을 것이다.</p>
+<hr>
+<p>대수적 자료형의 재미있는 점은 재귀적 구조와 지연 평가(Lazy Evaluation)을 통해
+무한의 자료형이 가능하다는 점인데, Codewars에서 Nat(0 이상의 정수)과 Cons를
+JavaScript로 구현하는 문제가 있다.</p>
+<h2>Nat</h2>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="typedef"><span class="keyword">data</span> <span class="type">Nat</span> = <span class="type">Zero</span> | <span class="type">Succ</span> <span class="type">Nat</span></span></span><br></pre></td></tr></table></figure>
+<p>Haskell에서 대수 자료형 Nat을 정의해보았다. 코드를 정확히 이해할 필요는 없고,
+<code>Zero</code>라는 0에 해당하는 값과 Nat을 인자로 받아 그다음 값을 갖는 <code>Succ</code>의 두가지
+경우가 될 수 있는 Nat이라는 섬 타입이다. 문제에서는 <code>Zero</code>와 <code>Succ</code>에 대해서
+정확히 같지는 않지만, 다음과 비슷하게 주어진다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> zero = () =&gt; &#123;&#125;;</span><br><span class="line"><span class="keyword">const</span> succ = (nat) =&gt; ( ()=&gt;nat );</span><br></pre></td></tr></table></figure>
+<p><code>zero</code>는 일종의 상수고, <code>succ</code>는 nat을 리턴하는 함수를 리턴한다. 즉, 패턴 매칭을
+통해 Succ에서 받은 이전 값을 다시 추출하는 과정을 함수 호출로 대신했다.  패턴
+매칭을 통해 Nat을 정숫값으로 변환하는 과정도 JavaScript로 대신해보자.</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">toInt</span> :: <span class="type">Nat</span> -&gt; <span class="type">Int</span></span><br><span class="line"><span class="title">toInt</span> <span class="type">Zero</span> = <span class="number">0</span></span><br><span class="line"><span class="title">toInt</span> (<span class="type">Succ</span> nat) = <span class="number">1</span> + toInt nat</span><br></pre></td></tr></table></figure>
+<p>인자로 <code>Zero</code>를 받을 경우에는 당연히 0이 되고, <code>Succ</code>를 받았을 경우에 <code>Succ</code>를
+생성할 때 받았던 이전 값 <code>nat</code>을 패턴 매칭을 통해 추출해서 다시 <code>toInt</code>로 넘겨서
+Nat은 하나씩 이전값을 보고 <code>Zero</code>가 나올 때까지 결괏값을 하나씩 증가시킨다.</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">toInt</span> (<span class="type">Succ</span> (<span class="type">Succ</span> (<span class="type">Succ</span> <span class="type">Zero</span>)))</span><br></pre></td></tr></table></figure>
+<p>이렇게 0의 세 번째 다음 값을 정수로 변환한다면 그 과정을 간단히 표현해서
+<code>1 + (1 + (1 + 0)</code>이 되고 <code>3</code>을 리턴하게 된다. 그렇다면 이걸 JavaScript로
+구현하면</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> toInt = (nat) =&gt;</span><br><span class="line">  nat === zero</span><br><span class="line">    ? <span class="number">0</span></span><br><span class="line">    : <span class="number">1</span> + toInt(nat())</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(toInt(succ(succ(succ(zero))))); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>이런 식으로 재귀를 통해 구현할 수 있다. 혹은 앞에서 언급했던 트램펄린과 비슷하게</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> toInt = (nat) =&gt; &#123;</span><br><span class="line">  <span class="keyword">let</span> count = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span>(; nat !== zero ; nat = nat(), count++);</span><br><span class="line">  <span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(toInt(succ(succ(succ(zero))))); <span class="comment">// 3</span></span><br></pre></td></tr></table></figure>
+<p>구현할 수도 있다. <code>succ</code>와 <code>zero</code>의 의미, 그리고 어떻게 다루어야하는지 방법을
+알았으니 나머지 인터페이스는 쉽게 구현할 수 있다.</p>
+<h2>Cons</h2>
+<p>Codewars에 대수 자료형을 다룬 문제가 하나 더 있다. Nat처럼 재귀적인 구조로 아주
+비슷한 Cons라는 구조다. 많은 언어에서 List 혹은 Sequence라는 이름으로 구현체를
+제공하는 유명한 자료형이다.</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="typedef"><span class="keyword">data</span> <span class="type">List</span> a = <span class="type">Cons</span> <span class="container">&#123; <span class="title">head</span> :: <span class="title">a</span> , <span class="title">tail</span> :: <span class="type">List</span> <span class="title">a</span>&#125;</span></span></span><br><span class="line">            | <span class="type">Nil</span></span><br></pre></td></tr></table></figure>
+<p>List는 <code>Cons</code> 혹은 <code>Nil</code>이 될 수 있는 섬 타입이다. 그리고 <code>Cons</code>는 다시 <code>a</code>
+타입의 <code>head</code>와 <code>List a</code> 타입의 <code>tail</code>로 이루어진다. 위에서 말했듯이 Nat와
+유사한 모양의 재귀적인 구조다. 참고로 <code>head</code>와 <code>tail</code>은 Cons 구조에서 일반적으로
+쓰이는 이름이지만 언어에 따라서 <a href="https://en.wikipedia.org/wiki/CAR_and_CDR" target="_blank" rel="external">car과 cdr</a>로
+표현하기도 한다. 또한, List와 Array를 모두 제공하는 언어나 라이브러리에서는 보통
+C언어에서처럼 고정된 길이의 index를 가지는 배열을 Array(혹은 Vector)라고 부르고
+앞서 말했듯 이런 Cons 구조를 List(Sequence)라고 부르는 경우가 많다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Cons</span>(<span class="params">head, tail</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.head = head;</span><br><span class="line">  <span class="keyword">this</span>.tail = tail;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> Nil = <span class="keyword">new</span> Cons(<span class="literal">null</span>, ()=&gt; &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'Empty!'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>문제를 다른 사람이 낸 것인지 앞에서는 함수 호출을 통해 지연 평가를 비슷하게
+구현했는데 이번에는 간단하게 속성(property)으로만 구현해서 제공된다. 앞에서의
+Nat과 비슷한 정수의 스트림을 구현해보면</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">int</span> :: <span class="type">Int</span> -&gt; <span class="type">List</span> <span class="type">Int</span></span><br><span class="line"><span class="title">int</span> n = <span class="type">Cons</span> n tail</span><br><span class="line">  <span class="keyword">where</span> tail = int (n + <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>이런 식이 된다. <code>tail</code>을 바로 평가하지 않기 때문에 <code>int 0</code>으로 List를 만들어도
+바로 <code>Cons 0 tail</code>을 만들 뿐 무한루프를 돌지 않는다. JavaScript에서 비슷하게
+만들어보자면</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> int = (n) =&gt; <span class="keyword">new</span> Cons(n, ()=&gt;int(n+<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">int(<span class="number">0</span>)        <span class="comment">// &#123; head: 0, tail: [Function] &#125;</span></span><br><span class="line">int(<span class="number">0</span>).tail() <span class="comment">// &#123; head: 1, tail: [Function] &#125;</span></span><br></pre></td></tr></table></figure>
+<p>이렇게 계속 <code>tail</code>을 실행할 때마다 다음 <code>Cons</code>를 생성해서 지연 평가를 구현했다.
+사실 링크의 문제에서는 지연 평가에 대한 내용이 없어서 굳이 이렇게까지 할 필요는
+없지만, 문제풀이가 목적이 아니니. 그럼 언어가 제공하는 List에서 앞서 정의한
+List(Cons|Nil)로 변환을 통해 Cons를 생성할 수 있도록 해보자.</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">fromArray</span> :: [a] -&gt; <span class="type">List</span> a</span><br><span class="line"><span class="title">fromArray</span> [] = <span class="type">Nil</span></span><br><span class="line"><span class="title">fromArray</span> (x:xs) = <span class="type">Cons</span> x (fromArray xs)</span><br></pre></td></tr></table></figure>
+<p><code>x:xs</code>는 Cons의 <code>x</code>가 head고 <code>xs</code>가 tail이며 두 개를 연결해서 하나의 Cons를
+만든다는 연산자 <code>:</code>이다. 참고로 <code>++</code>의 경우 두 개의 Cons를 연결(concat)한다.
+이걸 또 JavaScript로 구현해보면 다음과 같다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fromArray = (arr = []) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span>(arr.length === <span class="number">0</span>) <span class="keyword">return</span> Nil;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">return</span> <span class="keyword">new</span> Cons(arr.shift(), ()=&gt;fromArray(arr.slice()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> cons = fromArray([<span class="number">1</span>, <span class="number">2</span>]);</span><br><span class="line"><span class="built_in">console</span>.log(cons); <span class="comment">// &#123; head: 1, tail: [Function] &#125;</span></span><br><span class="line">cons = cons.tail();</span><br><span class="line"><span class="built_in">console</span>.log(cons); <span class="comment">// &#123; head: 2, tail: [Function] &#125;</span></span><br><span class="line">cons = cons.tail();</span><br><span class="line"><span class="built_in">console</span>.log(cons, cons === Nil); <span class="comment">// &#123; head: null, tail: [Function] &#125; true</span></span><br><span class="line">cons = cons.tail();</span><br><span class="line"><span class="comment">//   throw new Error('Empty!');</span></span><br><span class="line"><span class="comment">//         ^</span></span><br><span class="line"><span class="comment">// Error: Empty!</span></span><br></pre></td></tr></table></figure>
+<p>이제 Sequence 타입에 항상 적용해보는 filter와 map을 구현해보자</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">filter'</span> :: (a -&gt; <span class="type">Bool</span>) -&gt; <span class="type">List</span> a -&gt; <span class="type">List</span> a</span><br><span class="line"><span class="title">filter'</span> f <span class="type">Nil</span> = <span class="type">Nil</span></span><br><span class="line"><span class="title">filter'</span> f (<span class="type">Cons</span> x xs)</span><br><span class="line">  | f x       = <span class="type">Cons</span> x (filter' f xs)</span><br><span class="line">  | otherwise = (filter' f xs)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="title">map'</span> :: (a -&gt; b) -&gt; <span class="type">List</span> a -&gt; <span class="type">List</span> b</span><br><span class="line"><span class="title">map'</span> f <span class="type">Nil</span> = <span class="type">Nil</span></span><br><span class="line"><span class="title">map'</span> f (<span class="type">Cons</span> x xs) = <span class="type">Cons</span> (f x) (map' f xs)</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> filter = (f, cons) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span>(cons === Nil) <span class="keyword">return</span> Nil;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(!f(cons.head)) <span class="keyword">return</span> filter(f, cons.tail());</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">return</span> <span class="keyword">new</span> Cons(cons.head, ()=&gt;filter(f, cons.tail()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> map = (f, cons) =&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span>(cons === Nil) <span class="keyword">return</span> Nil;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">return</span> <span class="keyword">new</span> Cons(f(cons.head), ()=&gt;map(f, cons.tail()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> prt = (cons) =&gt; &#123;</span><br><span class="line">  <span class="keyword">while</span>(cons !== Nil) &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(cons.head);</span><br><span class="line">    cons = cons.tail();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>출력이 귀찮아서 <code>prt</code> 함수를 따로 만들었다. 이제 확인을 해보면</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> even = (d) =&gt; d % <span class="number">2</span> === <span class="number">0</span>;</span><br><span class="line"><span class="keyword">const</span> doub = (d) =&gt; d * <span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> toFive = fromArray([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>]);</span><br><span class="line"></span><br><span class="line">prt(filter(even, toFive));</span><br><span class="line"><span class="comment">// 2</span></span><br><span class="line"><span class="comment">// 4</span></span><br><span class="line">prt(map(doub, toFive));</span><br><span class="line"><span class="comment">// 2</span></span><br><span class="line"><span class="comment">// 4</span></span><br><span class="line"><span class="comment">// 6</span></span><br><span class="line"><span class="comment">// 8</span></span><br><span class="line"><span class="comment">// 10</span></span><br></pre></td></tr></table></figure>
+<p>이제 재귀적인 구조를 다룰 때 어떻게 실행되는지에 대해 안에서 어떻게 돌아갈지를
+간단하게 구현해봤는데 적당히 감이 왔을 것이다. 여기에서 약간의 스킬을 더해서
+<code>window.setImmediate</code>나 <code>process.nextTick</code>으로 스레드 점유를 살짝 연기시키면
+충분히 큰 자료도 시간만 있으면 다룰 수 있을 것이다. JavaScript에서 <code>map</code>과
+<code>filter</code>를 어떻게 쓰는지 모르는 사람은 거의 없을 것이고 Cons에서 구현한 것들도
+배열에서 쓰이는 것과 큰 차이가 없었다. 다음에는 이걸 대수적으로 해석할 때의
+의미와 그걸 지원하는 구조에 대한 명칭을 이야기할 것이다.</p>
+<hr>
+<p>Reference</p>
+<ul>
+<li>Codewars Kata
+<ul>
+<li><a href="http://www.codewars.com/kata/algebraic-data-types" target="_blank" rel="external">Algebraic Data Types</a>
+: Nat = Zero | Succ Nat</li>
+<li><a href="http://www.codewars.com/kata/algebraic-lists" target="_blank" rel="external">Algebraic List</a>
+: List a = Cons {a, List a} | Nil</li>
+</ul>
+</li>
+<li>함수프로그래밍 실천기술(가칭), 제이펍 2015</li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/algebraic-data-type/" class="post__tag__link">algebraic data type</a></li><li class="post__tag__item"><a href="/blog/tags/functional/" class="post__tag__link">functional</a></li><li class="post__tag__item"><a href="/blog/tags/maybe/" class="post__tag__link">maybe</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/wtf-2-adt.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><a title="Previous" href="/blog/2015/08/04/wtf-3-fam/" class="page-menu__link icon-arrow-left"></a></li><li class="page-menu__item"><a title="Next" href="/blog/2015/08/04/wtf-1-intro/" class="page-menu__link icon-arrow-right"></a></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-52090105-1');ga('send','pageview');
+</script></body></html>

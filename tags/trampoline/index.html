@@ -1,0 +1,89 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/blog/rss.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>trampoline - devthewild</title><link rel="stylesheet" href="/blog/css/main.css" type="text/css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--></head><body><header class="head"><h1 class="head-title u-fl"><a href="/blog/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/blog/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/blog/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-08-04T13:57:16.000Z" class="post__time">4th Aug, 2015</time><h1 class="post__title"><a href="/blog/2015/08/04/wtf-1-intro/">WTF - 1. 시작</a></h1></header><div class="post__main echo"><blockquote>
+<p>What is the Functional?</p>
+<ol>
+<li><a href="/blog/2015/08/04/wtf-1-intro/">Introduction</a></li>
+<li><a href="/blog/2015/08/04/wtf-2-adt/">Algebraic Data Type</a></li>
+<li><a href="/blog/2015/08/04/wtf-3-fam/">Maybe or Not</a></li>
+<li><a href="/blog/2015/08/04/wtf-4-parser/">Monadic Molecule Parser</a></li>
+</ol>
+</blockquote>
+<p>얼마 전에 지인과 맥주 한잔을 하다가 iOS 개발을 Swift로 하고 있다 보니 함수형으로
+못 쓰는 것도 아닌데 같이 일하는 사람들이 배울 생각이 없어서 도입하기 어렵다는
+말을 들었다. 요즘 여기저기에서 폴리글랏이니 병렬처리니 하는 말과 함께 함수형
+패러다임이 무엇인지 어디에 좋다는지 하는 설명은 많이 들려오고 있고 그래서 관심이
+있는 사람은 많지만, 그래서 그걸 구체적으로 어디에 어떻게 쓰이는지에 대해 잘
+몰라서 동기부여가 되지 않는 사람들이 많다. 나도 입문 단계를 아직 벗어나지
+못했다고 생각해서 앞으로 쓸 글에 틀린 점이 있을 수도 있지만(그러니 이상하거나
+틀린 점을 발견한다면 <a href="https://github.com/seoh/blog/issues" target="_blank" rel="external">이슈</a>에 남겨주길
+바란다) Codewars의 문제 몇 개를 풀어보면서 이게 어떤 모습인지 어떻게 쓰이는지
+한번 써볼까 한다. 사실 개발자가 뭔가를 배우는 데는 생업에 관련된 게 큰
+이유겠지만 가장 큰 이유이자 가장 좋은 동기부여는 역시 재미가 아닐까 싶다. 이걸
+보고 뭔가 재미있게 쓰인다고 느끼고 서점가서 책이라도 한번 펼쳐보는 사람이
+생긴다면 이 글의 목표는 성공한 것이다.</p>
+<p>시작하기에 앞서서 앞으로 관심을 가질 사람들에게 가장 도움이 될만한 것은 내가
+어떤 책을 읽고 어떻게 공부해왔는지 순서부터 말하는 것이 아닐까. 예전의
+<a href="http://seoh.github.io/blog/2015/01/18/pis-review/">PiS 리뷰</a>에서 썼듯이
+처음에 재미를 느끼고 뭔가 해보기 시작한 것은 <a href="http://www.hanbit.co.kr/ebook/look.html?isbn=9788979149678" target="_blank" rel="external">자바 개발자를 위한 함수형
+프로그래밍</a>과
+<a href="http://hanbit.co.kr/book/look.html?isbn=978-89-6848-079-9" target="_blank" rel="external">함수형 자바스크립트</a>
+에서다.  함수형 언어라고 불리는 것들을 배우면 함수형 사고에 큰 도움이 되지만
+처음부터 너무 큰 벽을 넘으려고 하면 지치기 쉽다. 그런 의미에서 지금 가장 익숙한
+언어가 적당히 함수형을 쓸 수 있도록 지원한다면 그걸로 먼저 조금씩 사고를 익히는
+것이 좋다. JavaScript도 좋고 Java 8도 충분하고 Swift라면 훌륭하다.</p>
+<hr>
+<p>이미 많은 사람이 알고 있지만 그래도 가장 먼저 익숙해지면 좋은 개념은 함수를
+자료형으로 생각하는 것이다. First-class function이니 Higher-order function이라는
+개념들이 있지만 결국 함수도 하나의 자료형이라는 개념에 조건을 붙인 것이다.
+함수(혹은 메소드)에서 정적인 자료를 넘기는 것에 익숙한 사람들이 가장 이질적으로
+느끼는 것이 이런 것으로 생각한다. 함수를 넘기고 함수를 만들어서 리턴하고,
+함수끼리 연산해서 새로운 함수를 만들고.  함수형 자바스크립트라는 책에서 독자에게
+훈련시키는 이런 것이 아닐까 싶다. 그럼 익숙한 것부터 시작해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">try</span>&#123; (<span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params"></span>)</span>&#123; count++; <span class="keyword">return</span> a(); &#125;)(); &#125;</span><br><span class="line"><span class="keyword">catch</span>(e) &#123; <span class="built_in">console</span>.log(e.message, count); &#125;</span><br><span class="line"><span class="comment">// Maximum call stack size exceeded 17926</span></span><br></pre></td></tr></table></figure>
+<p>JavaScript로 코딩하다 보면 재귀함수에서 로직을 잘못 짜거나 생각했던 범위를 훨씬
+넘는 값을 받았을 때 저런 문제가 발생한다. 대부분은 이미 아는 내용이겠지만 잠시
+다른 이야기를 해보자면, 기계는 코드를 한 줄씩 읽어서 해석하다가 어딘가로
+넘어가게 될 때(CALL), 현재 가지고 있는 값들을 어딘가에 저장해두고 다시 돌아올
+위치를 기록한 다음에 넘어가게 된다. 그래서 어딘가로 계속 넘어가다 보면 기계의
+물리적 혹은 논리적인 한계 때문에 실행환경에서 익셉션을 발생시키거나 프로세스가
+강제로 종료된다. 많은 언어에서는 꼬리 재귀 최적화(Tail Recursion Optimization)
+혹은 꼬리 호출 제거(Tail-call Elimination)라고 불리는 기능을 지원하는데,
+어딘가(A)로 한번 넘어갔을 때 거기에서 다시 어딘가(B)로 넘어갈 때 A에서의 상태를
+굳이 저장하지 않아도 된다면 돌아올 곳은 똑같으니 현재 값들을 저장하고 돌아올
+곳을 기록하는 작업을 생략한 채 그냥 B로 넘어가는 식(JMP)으로 최적화가 가능하다.</p>
+<p>그렇다면 JavaScript에서는 언어적인 한계 때문에 충분한 시간이 있어도 충분히 많은
+재귀를 할 수 없을까? JavaScript에서도 어떤 패턴을 통해 콜스택을 일정하게 유지할
+수 있다(하지만 아마 다소 메모리의 증가는 생길 것이다). 간단한 예를 들어서 다음과
+같은 피보나치 수열이 있다고 해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fibo = (n) =&gt;</span><br><span class="line">  n &lt; <span class="number">3</span></span><br><span class="line">    ? <span class="number">1</span></span><br><span class="line">    : fibo(n-<span class="number">1</span>) + fibo(n-<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<p>위에서 말했듯이 저장할 상태가 없어야하는데 양쪽으로 재귀를 돌다 보니 하나를 돌때
+다른 하나를 저장하고 있어야 한다. 그러니 구조를 약간 바꾸어보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> f = (a, b, n) =&gt;</span><br><span class="line">  n &lt; <span class="number">2</span></span><br><span class="line">    ? a</span><br><span class="line">    : f(b, a+b, n-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> fibo2 = (n) =&gt; f(<span class="number">1</span>, <span class="number">1</span>, n);</span><br></pre></td></tr></table></figure>
+<p>인자가 많이 늘어났지만 저장해야하는 상태없이 다음 재귀로 넘어갈 수 있게 되었다.
+이제 콜 스택의 깊이를 유지하려면 함수를 재귀적으로 실행시키지 않고 실행하고
+끝난 뒤에 다시 실행하도록 순서를 변경하면 된다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> f2 = (a, b, n) =&gt;</span><br><span class="line">  n &lt; <span class="number">2</span></span><br><span class="line">    ? a</span><br><span class="line">    : () =&gt; f2(b, a+b, n-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> fibo3 = (n) =&gt; &#123;</span><br><span class="line">  <span class="keyword">let</span> t = () =&gt; f2(<span class="number">1</span>, <span class="number">1</span>, n);</span><br><span class="line">  <span class="keyword">while</span>(<span class="keyword">typeof</span> (t = t()) === <span class="string">'function'</span>);</span><br><span class="line">  <span class="keyword">return</span> t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>다음 실행될 재귀를 함수로 감싸서 리턴하면 한번에 하나씩 실행이 되며, 함수가 아닌
+값을 받았을 때 재귀를 대신한 루프가 종료된다. 이해하기 편하도록 원형<code>fibo2</code>을
+최대한 유지해서 <code>fibo3</code>를 작성했고, 이걸 일반화시킨 패턴을 트램펄린(trampoline)
+이라고 부른다. 사실 트램펄린 자체는 함수형 패턴의 예시라기보다 CPS(Continuation
+passing style)의 예라고 설명하는 쪽이 더 적절하다. 다만 이 패턴이 재미있는 것은
+JavaScript에서 지원하지 않는 꼬리 재귀 최적화와 지연평가의 개념, 그리고 우회
+구현이 동시에 들어있기 때문에 언어의 한계를 기술적으로 우회한다는 점에서, 그리고
+그 기반에 대한 개념이 함수형과 맞닿아있다는 점에서 예시로 가져왔다.  함수형
+자바스크립트 책을 처음 읽었을 때 이해하기 어려워서 미뤄뒀는데 계속 함수형처럼
+코딩하려고 노력하다 나중에 다시 읽으니 그 전에 왜 이해하지 못했나 싶었다. 아마
+위에서 언급했던 것처럼 자료형처럼 넘기고 받는다는 생각에 이질감이 들어서였을까.</p>
+<hr>
+<p>Reference</p>
+<ul>
+<li><a href="http://www.eriwen.com/javascript/cps-tail-call-elimination/" target="_blank" rel="external">Continuation-passing and tail call elimination in Javascript</a></li>
+<li><a href="http://dogfeet.github.io/articles/2012/by-example-continuation-passing-style-in-javascript.html" target="_blank" rel="external">예제로 설명하는 자바스크립트에서의 Continuation-passing style</a></li>
+<li>함수형 자바스크립트, 한빛미디어 2014</li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/blog/tags/functional/" class="post__tag__link">functional</a></li><li class="post__tag__item"><a href="/blog/tags/trampoline/" class="post__tag__link">trampoline</a></li></ul><a href="https://github.com/seoh/blog/tree/master/source/_posts/wtf-1-intro.md" class="post__foot-link u-fr">Pull Request</a><a href="https://github.com/seoh/blog/issues/new" class="post__foot-link u-fr">Tell me</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2015 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><span title="Next" class="page-menu__link icon-arrow-right page-menu__link--disabled"></span></li></menu></footer><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+e.src='//www.google-analytics.com/analytics.js';
+r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+ga('create','UA-52090105-1');ga('send','pageview');
+</script></body></html>

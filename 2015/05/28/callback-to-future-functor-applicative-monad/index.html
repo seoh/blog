@@ -68,8 +68,8 @@
 <p><code>readFileF</code>의 결과는 인자로 받은 파일 이름의 내용을 잡고 있는 Future가 된다.</p>
 <h2>Future 다루기: 첫번째 게스트</h2>
 <p><code>Future</code>를 결과적으로 함수의 결과를 잡고 있는 마법 상자처럼 생각할 수도 있다.</p>
-<p>뭔가 쓸모있는 것을 하려면 Future 타입에서 쓸모있는 연산들을 제공해야한다. 아니면 그냥 쓸모없는
-<code>undefined</code>만 만들어낼 뿐이다. (?)</p>
+<p>뭔가 쓸모있는 것을 하려면 Future 타입에서 쓸모있는 연산들을 제공해야한다. 그러지 않는다면
+필요없이 또 다른 <code>undefined</code>를 만든 것과 다를 바 없다.</p>
 <p>그러면 어떤 연산을 Future에서 제공해야할까?</p>
 <p>Future 상자에서 잡고 있는 값에 어떤 연산을 하고 싶을 때 (function map을 줄인)<code>fmap</code>을 호출할
 것이다.</p>

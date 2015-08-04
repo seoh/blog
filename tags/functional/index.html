@@ -26,8 +26,8 @@ Haskell로 도전해보았다. 일단 문제를 단순화시켜서 괄호 없는
 </ol>
 <p>BNF라는 명칭만 기억나고 정확한 내용은 기억나지 않지만 비슷하게 옮겨보자면</p>
 <ul>
-<li>molecules  = monoatomic  | molecules</li>
-<li>monoatomic = atom amount | atom</li>
+<li>molecules  = homoatomic  | molecules</li>
+<li>homoatomic = atom amount | atom</li>
 </ul>
 <p>이제 이걸 적용할 수 있는 파서를 만들어보자. 일단 파서의 적절한 타입을
 만들어야 하는데, 함수형에서는 어떤 흐름을 기록하는데 자주 쓰이는
@@ -78,7 +78,7 @@ Haskell로 도전해보았다. 일단 문제를 단순화시켜서 괄호 없는
 <p>ES6에서 생긴 상수/변수인 <code>const</code>와 <code>let</code>은 호이스팅(hoisting)되지 않아서 이렇게
 만들면 작동하지 않는다. 그래서 함수가 실행된 뒤에 <code>amount</code>를 읽을 수 있도록
 소스가 약간 길어지지만 감수하면서 만들자면 다음과 같다.</p>
-<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> amount = (str) =&gt; or(and(digit, amount), digit);</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> amount = (str) =&gt; or(and(digit, amount), digit)(str);</span><br></pre></td></tr></table></figure>
 <p>하지만 0개 이상을 읽는 경우가 이번뿐이 아니므로 이걸 좀 다듬어보자.</p>
 <figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> many = (p) =&gt; (str) =&gt; or(and(p, many(p)), p)(str);</span><br><span class="line"><span class="keyword">const</span> amount = many(digit);</span><br></pre></td></tr></table></figure>
 <p>이제 <code>many</code>를 사용하면 나머지를 완성할 수 있다.</p>

@@ -9,7 +9,7 @@ tags: Elm
 공부할 수 있었으면 좋겠다는 생각에 어떤 점에서 관심을 가지게 되었고 어떤 것을
 봐왔는지 정리해두려고 한다.
 
-time traveldebugger
+time travel debugger
 ---
 
 요새 react-hot-loader를 통해 hot swap(코드 수정 후 현재 상태까지 다시 컨트롤하지
@@ -63,14 +63,24 @@ tutorial
 other drugs
 ---
 
-- [Functional Programming][uchicago] 
+- [Functional Programming][uchicago]
   + 시카고대에서 올해 초 겨울학기 강의를 Elm으로 진행했다. 조만간 읽을 예정.
+  + 0.14 기준이라 [Mailbox와 Task][0.15] 대신 Channel이 있어서 지금 그대로
+    따라하기는 어렵다.
 - [Learning FP the hard way: Experiences on the Elm language][gist]
   + Gist에 한페이지짜리 함수형 프로그래밍 소개글이 있지만 이것만으로 이해하기는
-어려워보인다.
+    어려워보인다.
 - [Shipping a Production Web App in Elm][dreamwriter]
   + Dreamwriter라는 in-browser editor가 원래 React/Flux + CoffeeScript로
-만들어졌는데, 속도와 관리 때문에 Elm으로 넘어간 이야기.
+    만들어졌는데, 속도와 관리 때문에 Elm으로 넘어간 이야기.
+- [Using Mailboxes in Elm][mailbox]
+  + Actor Model처럼 Mailbox라는 개념을 통해서 Message를 보내는데 문서가 부족해서
+    누가 대신 쓴 글
+- [Similar libraries which were inspired by RxJS: Elm][rxbook]
+  + rx-book의 한 챕터에 링크를 정리해놨는데 어떤 Elm 커뮤니티보다 잘해놨다.
+- [Seven More Languages in Seven Weeks][seven2]
+  + "You’ll learn seven exciting languages: Lua, Factor, Elixir, Elm, Julia, MiniKanren, and Idris."
+  + 유일하게 Elm을 언급한 책인데 전작인 [세븐 랭귀지][seven]처럼 번역될 것 같아서 일단 기다리는 중.
 
 ---
 
@@ -91,6 +101,11 @@ other drugs
 [uchicago]: https://www.classes.cs.uchicago.edu/archive/2015/winter/22300-1/
 [gist]: https://gist.github.com/ohanhi/0d3d83cf3f0d7bbea9db
 [dreamwriter]: https://presentate.com/rtfeldman/talks/shipping-a-production-web-app-in-elm
+[mailbox]: https://gist.github.com/mgold/461dbf37d4d34767e5da
+[0.15]: http://elm-lang.org/blog/announce/0.15#introducing-mailboxes
+[rxbook]: http://xgrommx.github.io/rx-book/content/similar_libraries/index.html#elm
+[seven2]: https://pragprog.com/book/7lang/seven-more-languages-in-seven-weeks
+[seven]: http://www.hanbit.co.kr/book/look.html?isbn=978-89-6848-185-7
 
 <style type="text/css">
 .center { text-align: center; }

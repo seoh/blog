@@ -45,7 +45,7 @@ vDOM/react의 구현체 속도 벤치마크가 유행했던 적이 있는데 거
 등장한 적이 있다. 홈페이지에도 [자랑][fast]이 올라와있는데 벤치마크 결과는
 다음과 같다. 참고로 [Om][om]은 Clojurescript의 React 구현체다.
 
-![](/blog/images/elm-resources/1.png)
+![]/images/elm-resources/1.png)
 
 tutorial
 ---

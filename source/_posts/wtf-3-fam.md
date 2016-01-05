@@ -9,10 +9,10 @@ tags:
 ---
 
 > What is the Functional?
->   1. [Introduction](/blog/2015/08/04/wtf-1-intro/)
->   2. [Algebraic Data Type](/blog/2015/08/04/wtf-2-adt/)
->   3. [Maybe or Not](/blog/2015/08/04/wtf-3-fam/)
->   4. [Monadic Molecule Parser](/blog/2015/08/04/wtf-4-parser/)
+>   1. [Introduction]/2015/08/04/wtf-1-intro/)
+>   2. [Algebraic Data Type]/2015/08/04/wtf-2-adt/)
+>   3. [Maybe or Not]/2015/08/04/wtf-3-fam/)
+>   4. [Monadic Molecule Parser]/2015/08/04/wtf-4-parser/)
 
 
 Maybe
@@ -235,22 +235,22 @@ Functor와 Applicative 정도는 has-a로 봐도 될 것 같지만), 내가 놓�
 Programming](http://fsharpforfunandprofit.com/posts/recipe-part2/)이었다.
 
 
-![](/blog/images/wtf-3-fam/1.png)
+![]/images/wtf-3-fam/1.png)
 
 Just에 어떤 연산`bind`을 할 때 결과는 다시 Maybe가 되어야 하니 Just(그림에서의
 Success) 혹은 Nothing(그림에서의 Failure) 둘 중 하나가 된다.
 
-![](/blog/images/wtf-3-fam/2.png)
+![]/images/wtf-3-fam/2.png)
 
 그런 연산이 여러 개 존재할 수 있다.
 
-![](/blog/images/wtf-3-fam/3.png)
+![]/images/wtf-3-fam/3.png)
 
 그때, 앞에서 어떤 처리들이 있었고 어디에서 Nothing으로 갔는지 관계없이 현재
 들어온 값을 보고 Just인지 Nothing인지 구분(switch)해주는 하나의 블럭을 만들기만
 하면 된다.
 
-![](/blog/images/wtf-3-fam/4.png)
+![]/images/wtf-3-fam/4.png)
 
 한번 Nothing이 되면 그 뒤에 어떤 연산이 오든 관계없이 Nothing으로 계속
 유지된다. 앞의 어디에서 Nothing이 되었다는 것에 신경 쓰지 않고 현재의 값만 보고

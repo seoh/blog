@@ -45,7 +45,7 @@ export PS1="$C_LIGHTGRAY(\t)$C_RESET \W \u$VC $C_GRAY$ $C_RESET"
 
 
 
-![](/blog/images/add-current-repository-info-to-shell/shell.png)
+![]/images/add-current-repository-info-to-shell/shell.png)
 위와 같이 전/후가 변경되었다.
 
 사용된 색상관련 변수는 [터미널에서 프롬프트(Prompt)에 나타나는 정보와 색상 변경하기](http://blog.saltfactory.net/99)를 참고하면 된다.

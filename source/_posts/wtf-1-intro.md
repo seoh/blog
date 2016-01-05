@@ -7,10 +7,10 @@ tags:
 ---
 
 > What is the Functional?
->   1. [Introduction](/blog/2015/08/04/wtf-1-intro/)
->   2. [Algebraic Data Type](/blog/2015/08/04/wtf-2-adt/)
->   3. [Maybe or Not](/blog/2015/08/04/wtf-3-fam/)
->   4. [Monadic Molecule Parser](/blog/2015/08/04/wtf-4-parser/)
+>   1. [Introduction]/2015/08/04/wtf-1-intro/)
+>   2. [Algebraic Data Type]/2015/08/04/wtf-2-adt/)
+>   3. [Maybe or Not]/2015/08/04/wtf-3-fam/)
+>   4. [Monadic Molecule Parser]/2015/08/04/wtf-4-parser/)
 
 
 얼마 전에 지인과 맥주 한잔을 하다가 iOS 개발을 Swift로 하고 있다 보니 함수형으로
@@ -29,7 +29,7 @@ tags:
 
 시작하기에 앞서서 앞으로 관심을 가질 사람들에게 가장 도움이 될만한 것은 내가
 어떤 책을 읽고 어떻게 공부해왔는지부터 말하는 것이 아닐까. 예전의
-[PiS 리뷰](http://seoh.github.io/blog/2015/01/18/pis-review/)에서 썼듯이
+[PiS 리뷰](/2015/01/18/pis-review/)에서 썼듯이
 처음에 재미를 느끼고 뭔가 해보기 시작한 것은 [자바 개발자를 위한 함수형
 프로그래밍](http://www.hanbit.co.kr/ebook/look.html?isbn=9788979149678)과
 [함수형 자바스크립트](http://hanbit.co.kr/book/look.html?isbn=978-89-6848-079-9)

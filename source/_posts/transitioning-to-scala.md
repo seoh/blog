@@ -32,7 +32,7 @@ tags:
 ### 스칼라로의 전환을 생각 중인 매니저와 개발자들에게 하는 조언
 
 <figure>
-<img src="/blog/images/transitioning-to-scala/1.jpg" /><figcaption class="image-caption">스칼라, 커피 한잔보다 좋다!</figcaption>
+<img src="/images/transitioning-to-scala/1.jpg" /><figcaption class="image-caption">스칼라, 커피 한잔보다 좋다!</figcaption>
 </figure>
 
 
@@ -138,7 +138,7 @@ def <-:[A, B](f: A => B): List[A] => List[B]
 짝코딩을 하면 팀 전체 스타일과 기술 평균에서 너무 멀어지지 않게 해주는데 효과적이다. 마지막으로 바라는게 필멸자들이 감히 범접할 수 없는 어려운 코드를 짜거나, 팀원들이 다들 준비가 될 때까지 다시 완벽하게 작동하는 명령형 코드로 짜는 것이다. 실험은 중요하지만, git은 두었다 무엇하는가. 포크해라, 두번해라.
 
 <figure>
-<img src="/blog/images/transitioning-to-scala/2.png" /><figcaption class="image-caption">팀원들이 이렇게 된다</figcaption>
+<img src="/images/transitioning-to-scala/2.png" /><figcaption class="image-caption">팀원들이 이렇게 된다</figcaption>
 </figure>
 
 스칼라의 유연성 덕분에 복잡함의 칼날을 피하는 것도, 언어의 새 기능이나 스칼라의 표현력을 익히기 쉽다. 문화는 언제나 개발팀에게 중요하지만, 더 중요한건 스칼라를 처음 배울 때 다같이 페달을 밟아 나가야한다는 것이다.
@@ -150,7 +150,7 @@ def <-:[A, B](f: A => B): List[A] => List[B]
 Reflection API가 처음 자바에 도입되었을 때, 모든 자바 개발자들이 자신들의 지적 능력을 동원해 **모든 것**에 리플렉션을 사용하려고 했다. 당시 내가 개발하던 코드들은 관리하기가 더럽게 복잡해졌고, 한 개발자가 미쳐날뛰어서 이해하지 못하는 기능을 남용했다는 것 말고 다른 이유는 없었다. 모든 생소한 기능은 발을 담그기 전에 천천히 깨끗하고 심플한 코드를 짜는게 더 낫다. 고급 테크닉을 이상하게 뒤죽박죽으로 구현한 것보다 깔끔하게 명령형 스타일로 스칼라 코딩을 하는게 차라리 낫다. 
 
 <figure>
-<img src="/blog/images/transitioning-to-scala/3.jpg" /><figcaption class="image-caption">준비가 되기 전에 깊게 들어가지마라. 천천히 가자.</figcaption>
+<img src="/images/transitioning-to-scala/3.jpg" /><figcaption class="image-caption">준비가 되기 전에 깊게 들어가지마라. 천천히 가자.</figcaption>
 </figure>
 
 좋은 음악처럼 좋은 코드도 우아하고 드물다. 좋은 음식에 꼭 좋은 재료가 들어가는건 아니다. 상상할 수 있는 모든 향신료가 들어간 음식을 먹고 싶어할 사람이 있을까? 코드를 쓰는 것도 그렇다. A1급 개발자가 쓴 신뢰할만한 코드는 자기가 뭘 하고 있는지 왜 하는지도 모르며 제멋대로 짠 A3/L3급 개발자의 코드보다 더 관리하기 쉽다.

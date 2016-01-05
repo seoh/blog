@@ -11,8 +11,8 @@ tags:
 
 IT말고 다른 분야에서도 DRM-free가 나왔으면 좋겠다는 생각도 들었지만 어쨌거나 보는 책의 반 이상, 아니 대다수가 IT관련 책이니 나에게는 좋은 일. "유지보수하기 어렵게 코딩하는 방법: 평생 개발자로 먹고 살 수 있다"라는 무료책을 비롯하여 현재 5권을 판매중이며 가격은 9900원(무료와 자바...를 제외한 나머지 세 책들)~11000원(자바 개발자를 위한 함수형 프로그래밍)로 인사이트에 비해 비교적 저렴한 편이나 대체로 얇은 책들 위주. 여하튼 굉장히 주관적이고 비논리적인 시각으로 특징을 비교해보자면
 
-![](/blog/images/comparison-with-drm-free-ebook-publishers/1.png "파이썬 완벽 가이드(인사이트) vs 함수형 프로그래밍(한빛미디어)")
-![](/blog/images/comparison-with-drm-free-ebook-publishers/2.png "파이썬 완벽 가이드(인사이트) vs 함수형 프로그래밍(한빛미디어)")
+![]/images/comparison-with-drm-free-ebook-publishers/1.png "파이썬 완벽 가이드(인사이트) vs 함수형 프로그래밍(한빛미디어)")
+![]/images/comparison-with-drm-free-ebook-publishers/2.png "파이썬 완벽 가이드(인사이트) vs 함수형 프로그래밍(한빛미디어)")
 
 
 - 인사이트

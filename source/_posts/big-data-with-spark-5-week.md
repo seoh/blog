@@ -29,7 +29,7 @@ RMSE의 값에 대한 의미(예상값과 실제값이 같을 때의 결괏값)�
 
 # 후기
 
-![]/images/big-data-with-spark-5-week/score.png)
+![](/images/big-data-with-spark-5-week/score.png)
 
 세 번째 과제를 진행하다가 TF-IDF에 대한 이해가 부족해서 자료를 찾다가 영어로 된
 글을 계속 읽다 보니 지루해져서 계속 미뤘는데, 결국 기한을 넘겨서 그냥 하던 데 

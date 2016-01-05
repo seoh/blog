@@ -102,7 +102,7 @@ tip.
 편한 python 툴을 꺼내놓고 기다리면서 다음 셀에서 어떻게 하면 될지 간단히
 테스트해보면 좋다.
 
-![]/images/big-data-with-spark-3-week/ptpython.png)
+![](/images/big-data-with-spark-3-week/ptpython.png)
 
 ---
 

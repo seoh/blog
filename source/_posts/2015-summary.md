@@ -24,7 +24,7 @@ tags: annual
 
 ### 2. Top 7
 
-![]/images/2015-summary/2.png)
+![](/images/2015-summary/2.png)
 
 왜 7이냐면 Top Page(`/`)와 블로그 메인(`/blog`)과 광고 페이지를 제외하니 첫 페이지에서 7개가 남아서.
 
@@ -39,7 +39,7 @@ tags: annual
 
 ### 3. Referrer
 
-![]/images/2015-summary/3.png)
+![](/images/2015-summary/3.png)
 
 역시 구글 검색이 제일 많고, 두번째는 직접 방문, 세번째는 광고라 필터링했고 네번째는 트위터 공유. 그리고
 readtrend에서 공유된 글은 시간이 지나도 방문자가 꾸준히 들어오는게 신기하다. 페이스북은 어디서

@@ -30,7 +30,7 @@ tags:
 
 이렇게 보일 것이다.
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/1.png)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/1.png)
 
 이제 셀에 드래그를 추가해보자.
 
@@ -38,7 +38,7 @@ tags:
 
 원하는 기능은 아니지만 어디로든 드래그할 수 있다.
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/2.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/2.gif)
 
 ---
 
@@ -52,7 +52,7 @@ draggable은 "speed" 속성을 갖는데 마우스 움직임에 따라 어느 �
 
 <p data-height="630" data-theme-id="0" data-slug-hash="GHwLo" data-default-tab="js" data-user="seoh" class='codepen'></p>
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/3.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/3.gif)
 
 ---
 
@@ -62,7 +62,7 @@ draggable은 "speed" 속성을 갖는데 마우스 움직임에 따라 어느 �
 
 이 액션 바를 추가한 다음에 셀을 왼쪽으로 끌면 화면 오른쪽 끝에서 나타나는걸 볼 수 있다.
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/4.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/4.gif)
 
 좀 재미있는걸 넣어보자. 드래그 핸들러는 액션 바를 조금이라도 움직일 때마다 실행되는데, 얼마나 셀을 움직이는지에 따라 색깔을 바꾸게 만들 수 있다.
 
@@ -76,13 +76,13 @@ draggable은 "speed" 속성을 갖는데 마우스 움직임에 따라 어느 �
 
 셀을 드래그할 때 액션 바의 색은 다음과 같이 변한다.
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/5.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/5.gif)
 
 충분히 액션 바를 드래그했을 때는 그대로 열려있도록 만들고 싶다. 이걸 하려면, DragEnd 핸들러에서 얼마나 드래그되었는지 확인하고 특정 너비를 넘었다면 계속 열려있도록 해보자.
 
 <p data-height="630" data-theme-id="0" data-slug-hash="qCdrl" data-default-tab="js" data-user="seoh" class='codepen'></p>
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/6.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/6.gif)
 
 
 # Activate on threshold
@@ -97,13 +97,13 @@ draggable은 "speed" 속성을 갖는데 마우스 움직임에 따라 어느 �
 
 <p data-height="630" data-theme-id="0" data-slug-hash="ekgDo" data-default-tab="js" data-user="seoh" class='codepen'></p>
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/7.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/7.gif)
 
 애니메이션이 좀 산만하다. 드래그할 때마다 계속 DragMove 이벤트가 발생하고 계속 애니메이션을 시작하려고 한다. 그래서 조건이 만족될 때 딱 한번만 발생하도록 해보자.
 
 <p data-height="630" data-theme-id="0" data-slug-hash="trboC" data-default-tab="js" data-user="seoh" class='codepen'></p>
 
-![]/images/prototyping-swipe-and-drag-gestures-with-framer-3/8.gif)
+![](/images/prototyping-swipe-and-drag-gestures-with-framer-3/8.gif)
 
 (역주, 원문에서는 Drag와 Animate 기능이 충돌해서 제대로 Animate가 작동하지 않아 Drag하는 레이어와 Animate되는 레이어를 따로 뒀는데 버그가 수정되었는지 잘 작동해서 그 이하 부분은 생략했다.)
 

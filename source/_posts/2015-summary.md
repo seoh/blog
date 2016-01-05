@@ -24,7 +24,7 @@ tags: annual
 
 ### 2. Top 7
 
-![]/images/2015-summary/2.png)
+![](/images/2015-summary/2.png)
 
 왜 7이냐면 Top Page(`/`)와 블로그 메인(`/blog`)과 광고 페이지를 제외하니 첫 페이지에서 7개가 남아서.
 

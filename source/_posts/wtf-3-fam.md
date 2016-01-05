@@ -9,10 +9,10 @@ tags:
 ---
 
 > What is the Functional?
->   1. [Introduction]/2015/08/04/wtf-1-intro/)
->   2. [Algebraic Data Type]/2015/08/04/wtf-2-adt/)
->   3. [Maybe or Not]/2015/08/04/wtf-3-fam/)
->   4. [Monadic Molecule Parser]/2015/08/04/wtf-4-parser/)
+>   1. [Introduction](/2015/08/04/wtf-1-intro/)
+>   2. [Algebraic Data Type](/2015/08/04/wtf-2-adt/)
+>   3. [Maybe or Not](/2015/08/04/wtf-3-fam/)
+>   4. [Monadic Molecule Parser](/2015/08/04/wtf-4-parser/)
 
 
 Maybe

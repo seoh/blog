@@ -7,10 +7,10 @@ tags:
 ---
 
 > What is the Functional?
->   1. [Introduction]/2015/08/04/wtf-1-intro/)
->   2. [Algebraic Data Type]/2015/08/04/wtf-2-adt/)
->   3. [Maybe or Not]/2015/08/04/wtf-3-fam/)
->   4. [Monadic Molecule Parser]/2015/08/04/wtf-4-parser/)
+>   1. [Introduction](/2015/08/04/wtf-1-intro/)
+>   2. [Algebraic Data Type](/2015/08/04/wtf-2-adt/)
+>   3. [Maybe or Not](/2015/08/04/wtf-3-fam/)
+>   4. [Monadic Molecule Parser](/2015/08/04/wtf-4-parser/)
 
 
 얼마 전에 지인과 맥주 한잔을 하다가 iOS 개발을 Swift로 하고 있다 보니 함수형으로

@@ -7,10 +7,10 @@ tags:
 ---
 
 > What is the Functional?
->   1. [Introduction]/2015/08/04/wtf-1-intro/)
->   2. [Algebraic Data Type]/2015/08/04/wtf-2-adt/)
->   3. [Maybe or Not]/2015/08/04/wtf-3-fam/)
->   4. [Monadic Molecule Parser]/2015/08/04/wtf-4-parser/)
+>   1. [Introduction](/2015/08/04/wtf-1-intro/)
+>   2. [Algebraic Data Type](/2015/08/04/wtf-2-adt/)
+>   3. [Maybe or Not](/2015/08/04/wtf-3-fam/)
+>   4. [Monadic Molecule Parser](/2015/08/04/wtf-4-parser/)
 
 Codewars에 분자식(문자열)에서 원자들이 몇 개인지 세는 문제가 있었다. 이미
 제출한 답은 다음과 같은 구조였다.

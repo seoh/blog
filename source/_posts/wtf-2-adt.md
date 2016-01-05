@@ -8,10 +8,10 @@ tags:
 ---
 
 > What is the Functional?
->   1. [Introduction]/2015/08/04/wtf-1-intro/)
->   2. [Algebraic Data Type]/2015/08/04/wtf-2-adt/)
->   3. [Maybe or Not]/2015/08/04/wtf-3-fam/)
->   4. [Monadic Molecule Parser]/2015/08/04/wtf-4-parser/)
+>   1. [Introduction](/2015/08/04/wtf-1-intro/)
+>   2. [Algebraic Data Type](/2015/08/04/wtf-2-adt/)
+>   3. [Maybe or Not](/2015/08/04/wtf-3-fam/)
+>   4. [Monadic Molecule Parser](/2015/08/04/wtf-4-parser/)
 
 > 컴퓨터 프로그래밍에서, 특히 함수형 프로그래밍과 타입 이론에서 대수 자료형은
 합성 타입의 한 종류이며 즉, 다른 타입들을 모아서 형성된 타입이다. 제일 보편적인

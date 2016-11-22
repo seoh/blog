@@ -14,7 +14,7 @@ email: devthewild@gmail.com
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 #url: http://seoh.github.io/
 #root: /blog/
-url: http://blog.seoh.xyz
+url: http://seoh.blog
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 

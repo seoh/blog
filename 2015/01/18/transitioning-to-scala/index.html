@@ -1,0 +1,136 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>번역, 스칼라로 전환 - devthewild</title>
+<link rel="stylesheet" href="/css/main.css">
+<!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><meta name="generator" content="Hexo 5.4.0"></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-01-18T13:21:37.000Z" class="post__time">January 18, 2015</time><h1 class="post__title"><a href="/2015/01/18/transitioning-to-scala/">번역, 스칼라로 전환</a></h1></header><div class="post__main echo"><blockquote>
+<h3>Translation of &quot;<a target="_blank" rel="noopener" href="https://medium.com/p/d1818f25b2b7">Transitioning to Scala</a>&quot; into Korean, under the same license as the original.</h3>
+</blockquote>
+<p>2011년 말부터 2014년 초까지 전자상거래 솔루션 전문 에이전시, <a target="_blank" rel="noopener" href="https://www.nurun.com/en/careers/toronto/">Nurun Toronto</a>에서 리드개발자로 일했다. 자바와 스프링만으로 새로운 프로젝트들을 계속하다보니 대체제를 찾아야할 때라는걸 알게 되었다.</p>
+<p>에이전시에서의 업무를 장기적인 관점에서 생각해봤다. &quot;자바가 구리다&quot;를 이해하지 못하는 고객들 때문에 마감에 시달렸다. 2004년도에 어플리케이션을 만들던 툴과 테크닉들은 2014년에는 별 도움이 되질 않았다. 2004년에는 코드 한줄을 테스트하기 위해 서버를 재시작하는게 당연했다 - 웹스피어는 재시작할 때 정체불명의 1200줄 XML 설정파일을 읽어오는데, 평균 걸리는 시간이 커피 한잔 마시고 오기 딱 좋은 120초 정도다. 요새는 이렇게 하면 에이전시나 개발자나 망한다.</p>
+<p>우리가 만드는 어플리케이션들은 단순히 데이터베이스의 뷰어가 아니라, 매일매일 똥을 치워주는 소중한 도구다.</p>
+<h3>1. 왜 타입세이프의 스택을?</h3>
+<p>지난 프로젝트를 루비온레일즈로 진행해보고 뭘 싫은지를 알았다. 다른 동적 타입 언어도 인터프리트 언어도 상태기반 웹 프레임워크(stateful web framework)도 쓰기 싫었다. 자바 바이트코드로 컴파일되는 정적 타입 언어나 활발한 생태계를 가진 툴들, 그리고 확장성을 위한 무상태 웹 프레임워크가 더 괜찮았다. 또한 우리 고객사들은 믿을만한 회사를 통해 전문적인 기술지원을 받을 수 있어야 마음의 위안을 가졌다.</p>
+<p>그래서 몇가지 선택지를 꼽아봤는데, 가장 먼저 타입세이프가 떠올랐다. 우리가 원하는 모든 것들이 있었다.</p>
+<p>컨셉증명을 위해 초소형 전자상거래 사이트를 내부적으로 만들어서 스칼라의 단순함과 플레이의 개발 생산성에 대해서 시연했고 충분히 관심을 끌어서 결국 <a target="_blank" rel="noopener" href="http://walmart.ca/">월마트 캐나다</a>의 새로운 전자상거래 플랫폼의 토대가 되었다.</p>
+<h3>왜 스칼라가 복잡하다고 느낄까?</h3>
+<p>스칼라는 <em>유연하다</em>. 유연하다는 것은 단순하다는 것을 포기해야하는 일이지만, 다른 면으로 스칼라는 단순히 &quot;자바보다 나은&quot; 정도가 아니라 그보다 더 좋으며 매우 우아한 언어이다. 스칼라나 새로운 어떤 언어로의 전환이라는 큰 도전은 단지 기술적인 일만이 아니다. 능력있는 개발자라면 새로운 문법, 새로운 개념, 새로운 IDE를 배울 수 있다. 변화는 기술보다는 그 과정이나 문화같은 다른 면에서 어렵다.</p>
+<blockquote>
+<p>짧게 말해서, 모든 것은 사람에 달려있다.</p>
+</blockquote>
+<p>이 글의 뒷부분은 스칼라 프로그래밍 튜토리얼이 아니다. 이미 많은 글들이 있고, 고급 스칼라의 깊은 부분에 대한 최신 트릭을 가르칠 만큼 나는 인정받은 스칼라 개발자도 아니다. 이 뒤로는 스칼라로의 전환을 생각하고 있는 개발자들, 팀장 혹은 매니저들에게 전하는 조언들이다. 이 조언들은 기업용 스칼라 프로젝트를 이끌 때 개인적으로 한 경험을 토대로한 것들이다.</p>
+<h3>스칼라로의 전환을 생각 중인 매니저와 개발자들에게 하는 조언</h3>
+<figure>
+<img src="/images/transitioning-to-scala/1.jpg" /><figcaption class="image-caption">스칼라, 커피 한잔보다 좋다!</figcaption>
+</figure>
+<h3>1. 언어의 기능들을 이해해라</h3>
+<p>모든 스칼라 개발자, 팀장, 매니저는 마틴 오더스키의 <a target="_blank" rel="noopener" href="http://www.scala-lang.org/old/node/8610">스칼라 레벨 가이드</a>를 읽어야한다.</p>
+<p>전업 스칼라 개발자로 경력 1년반이 지나고 엔터프라이즈 스칼라 프로젝트도 진행했지만, 마틴의 가이드에서 스칼라 개발자 등급 A2.5/L1.5라고 생각한다. A3/L3에 있는 테크닉들을 사용하지만, 웹 어플리케이션을 쭉 개발해오면서 대부분은 써본 적이 없다. 케이크 패턴을 써본 적도 없고, 고계도 타입(high-kinded type, 역주: <a target="_blank" rel="noopener" href="http://twitter.github.io/scala_school/ko/advanced-types.html#higher">스칼라 학교</a>에서는 <em>상류 타입</em>이라고 번역했는데, 하나의 Layer 위에 있다는 생각으로 고계高階를 생각해봤다)을 써본 적이 아직 없다. 그렇다고 나쁜 개발자도 아니고, <a target="_blank" rel="noopener" href="http://ko.wikipedia.org/wiki/%EA%B0%80%EB%A9%B4%ED%98%84%EC%83%81">가면현상</a>의 증상도 아니고, 단지 내 시간은 한정되어있고 가장 돈이 되는 것에 집중하려고 한다. 게다가 드럼도 치고 기타도 치고 일주일에 두번 댄스 레슨도 다니고 커피도 많이 마시고 데이트하러 나가야한다. 시간은 소중하니까.</p>
+<p>Walmart.ca 프로젝트에서는 콤비네이터 파서와 폴드를 사용하지도 않고 레벨 가이드의 얇은 부분만을 썼다. &quot;얇은&quot; 스칼라로도 이전 플랫폼보다 훨씬 좋은 생산성을 보여줬다. 구현하는데 골치아픈 일도 없었다. 그렇게 짠 코드들은 이전보다 더 관리하기에도 좋고 생산성도 더 좋았다. 블랙 프라이데이나 박싱 데이(역주, 북미지역 등지에서 추수감사절 시즌/크리스마스 시즌에 대부분의 쇼핑몰들이 매년하는 대량할인 이벤트 기간들)에서의 확장도 완벽하게 돌아갔고, 많은 자바기반의 전자상거래 플랫폼은 하지 못했던 것들이다.</p>
+<p>그래서 중요하지 않다는건가?</p>
+<p>단순하게 스칼라를 쓴다는 것을 스칼라가 부족하다는 것으로 착각하지 마시길. A1과 A2 등급에서 익힐 수 있는 것들을 보자.</p>
+<ul>
+<li>간단한 클로저</li>
+<li>map, filter 등의 콜렉션</li>
+<li>패턴 매칭</li>
+<li>trait 합성</li>
+<li>재귀</li>
+<li>XML 표현식</li>
+</ul>
+<p>(역주: 코멘트에서 XML 표현식은 <a target="_blank" rel="noopener" href="http://www.swift.com/">SWIFT</a>에서 사용중이라고 한다.)</p>
+<p>자바에 몇개 더 추가한 것과 비슷하다. 서술하듯이 개발하고 소프트웨어를 관리하는 새로운 방법이다. A3에 있는 몇개도 익히기 꽤 쉽고 - Akka나 다른 병렬 처리 라이브러리들을 사용하기 위해 꽤나 중요한 것들인데 - 그에 비해 크게 어렵지 않고 수학 학위가 필요할 정도는 아니다.</p>
+<ul>
+<li>fold</li>
+<li>stream, 혹은 지연평가 자료구조</li>
+<li>actor</li>
+<li>combinator parser</li>
+</ul>
+<p>이런 테크닉들을 익혔을 때의 좋은 부가효과는, 사용하는 <strong>모든</strong> 언어에서 더 좋은 개발자가 된다는 것이다. 나는 스칼라와 자바스크립트 모두에서 클로저나 다른 테크닉들을 익히는데 정말 도움이 됐고 더 좋은 자바스크립트 프로그래머가 되었다.</p>
+<h3>2. 시간을 써라</h3>
+<p>자바에서 건너온 많은 스칼라 개발자들은 바로 적응하고 싶어하지만 스칼라는 완전히 다른 언어다. 새로운걸 익힌다는 것은 연습을 필요로 한다. 스칼라도 예외는 아니다.</p>
+<p>좋은 소식은 A2/L1 등급만으로도 충분히 스칼라 어플리케이션을 만들만한 자격이 있다는 것이다. 모든 스칼라 개발자가 고급 순수함수 자료구조, 타입 이론, 고계도 타입을 이해하고 있을 필요는 없다. 하지만 스칼라는 차세대 어플리케이션을 만드는 전문 개발자를 위한 프로그래밍언어라는 것이다. 그래서 배우고 체득하는데 많은 시간이 걸릴 것이다.</p>
+<h3>3. 배우는걸 두려워말라</h3>
+<p>자바 개발자라면 다음과 같은 자료들을 통해 스칼라를 배우길 강력히 추천한다.</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.amazon.com/Scala-Impatient-Cay-S-Horstmann/dp/0321774094">Scala for the Impatient</a>를 읽어라. 특히 <em>예제</em>가 필요한 성격급한 개발자들에게 좋은 시작점이다. (역주, 번역판 <a target="_blank" rel="noopener" href="http://www.bjpublic.co.kr/skin12/product_list.php?boardT=v&amp;page_idx=9&amp;goods_data=aWR4PTk2JnN0YXJ0UGFnZT0zNiZsaXN0Tm89NjEmdGFibGU9cmVkX2dvb2RzJnBhZ2VfaWR4PTkmc2VhcmNoX2l0ZW09%7C%7C">쉽게 배워서 빨리 써먹는 스칼라 프로그래밍</a>, 2013 비제이퍼블릭)</li>
+<li>마틴 오더스키, 렉스 스푼, 빌 베너스의 <a target="_blank" rel="noopener" href="http://www.amazon.com/Programming-Scala-Comprehensive-Step---Step/dp/0981531644">Programming in Scala</a>를 읽어라. <em>Scala for the Impatient</em>보다 더 자세한 책이라 언어의 기능들에 대해 폭넓은 시야를 익히기에도 좋다. (역주, 번역판 <a target="_blank" rel="noopener" href="http://www.acornpub.co.kr/book/programming-in-scala">Programming in Scala</a>, 2014 에이콘)</li>
+<li>가능하면 Coursera의 <a target="_blank" rel="noopener" href="https://www.coursera.org/course/progfun">Functional Programming Principles in Scala</a> 코스를 들어라. Coursera가 Scala로 만들어졌다.</li>
+<li><a target="_blank" rel="noopener" href="https://typesafe.com/activator">Typesafe Activator</a> 템플릿들을 살펴봐라. 다른 언어들에 비해 온라인 문서나 학습자료가 부족하기도 하지만, 다른 사람 코드를 분석하는게 제일 좋은 방법이기도 하다. 특히 James Ward같은 능력있는 개발자들이 짠 코드라면.</li>
+<li>가능하면 Coursera의 <a target="_blank" rel="noopener" href="https://www.coursera.org/course/reactive">Principles of Reactive Programming</a> 코스를 들어라. 스칼라와 대량 데이터 처리를 위한 Akka를 사용하려는 개발자들에게 좋은 자료다.</li>
+<li>스칼라 모임에 참석하고 스칼라를 사용하는 실무자들이 어디에 쓰는지 배워라.</li>
+<li><a target="_blank" rel="noopener" href="http://www.amazon.com/Functional-Programming-Patterns-Scala-Clojure/dp/1937785475">Functional Programming Patterns in Scala and Clojure</a>를 읽어라. 예전의 명령형 스타일 코드와 더 읽을만해진 함수형 스타일 코드를 비교해보고 더 함수형의 언어를 배우고 싶어졌다. 하스켈은 좀 과하고, 그래서 Clojure를 배우기 시작했다. 그리고나서 내 스칼라 코드는 더 간략해지고 더 의미있어졌다.</li>
+</ul>
+<h3>4. 온라인에서 읽는 것들은 적당히 감안해서</h3>
+<p><a target="_blank" rel="noopener" href="https://github.com/scalaz/scalaz">Scalaz</a>를 만든 <a target="_blank" rel="noopener" href="http://blog.tmorris.net/">토니 모리스</a>처럼 다른 세계에서 온 똑똑한 개발자들이 많이 있다. 하스켈 세계나, 함수형 프로그래밍, 그리고 수학 분야.</p>
+<p>토니는 다음과 같은 함수 선언에 반대를 한다.</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def reverse[<span class="keyword">A</span>]: List[<span class="keyword">A</span>] =&gt; List[<span class="keyword">A</span>]</span><br></pre></td></tr></table></figure>
+<p>그리고 이런 선언을 더 선호한다.</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def &lt;-:[<span class="keyword">A</span>, B](f: <span class="keyword">A</span> =&gt; B): List[<span class="keyword">A</span>] =&gt; List[B]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>다음에 &lt;-:라는 이름의 함수를 보면 이렇게 생각해라, &quot;으악, 읽기도 구리고 내가 뭘 하고 있는거야?&quot;, (아마 친근보다는 좀 강력한) 다른 툴은 없는지? 이거 타입은 뭐지? 대수적인 속성은 뭐지? 드러난 속성들이 또 뭐가 있지?</p>
+<p><a target="_blank" rel="noopener" href="http://blog.tmorris.net/posts/identifier-names/index.html">Sticks, stones, but names are not useful to me</a> by Tony Morris</p>
+</blockquote>
+<p>이게 스칼라의 미학이다. 토니도 맞다. 틀린건 없고, 그냥 개인과 팀의 선택에 대한 문제다. 나는 &lt;-:보다 <strong>reverse</strong>를 더 선호하지만, 내가 가독성과 단순성을 선호하는만큼 토니같은 개발자들은 수학적인 순수성과 사실성을 선호한다. 이 스타일들은 항상 다른 것 같다. 토니는 라이브러리들을 개발했고, 나는 라이브러리들로 어플리케이션을 만들고, 우리 둘 다 스칼라로 개발한다. 나는 가끔 <em>var</em>를 쓰고 나중에 걷어내지만, 누군가는 그걸 질색한다.</p>
+<p>그런데 팀에서 사람들이 영어, 불어, 독어 같이 한 언어가 아닌 여러 언어를 쓴다고 해보자. 이럴 때 함수 이름을 영어 동사로 써도 그러려니 한다. 내가 같이 일했던 캐나다 사람들은 영어와 불어를 쓰는 사람들이 많았고, 헝크러진 머리나 좁쌀만한 눈(역주, 미국인이 캐나다인을 놀릴 때 주로 쓰는 표현)보다는 보기 괜찮다고 확신할 수 있다. 젠장(<em>Sacré bleu!</em>)</p>
+<p>스칼라처럼 독선적이지 않은 언어는 그래서 아름답다. 자기 스타일을 자유롭게 적용할 수 있고, 언어가 그걸 방해하지 않는다. &lt;-:도 <em>쓸 수 있다는</em>게 마음에 든다.</p>
+<h3>5. 주머니가 허락한다면 기술지원을 받아라</h3>
+<p>나는 운좋게도 타입세이프의 Nilanjan Raychaudhuri와 Roland Kuhn같은 진짜 고수들에게 배워서 Nurun에 설계 리뷰, 코드 리뷰, 페어 프로그래밍을 도입할 수 있었다. 새로운 프로그래밍 스타일을 배운 덕분에 신뢰도를 월등히 높인 프로젝트를 진행하면서 다방면으로 값으로 따질 수 없는 도움을 받았다.</p>
+<p>단순히 스칼라의 함수형 스타일뿐만 배운게 아니라, 리액티브 프로그래밍 컨셉도 배웠다. Play와 Akka도. 새로운 테크닉들과 프로젝트 전반에 걸쳐 타입세이프의 도움을 많이 받았다. 우리가 항상 제대로 된 길을 가고 있는지에 대해 확신을 받았다.</p>
+<p>타입세이프의 이메일 지원 역시 훌륭하다. <a target="_blank" rel="noopener" href="http://typesafe.com/how/subscription">지원 구독</a>은 주머니가 허락한다면 지출할 가치가 충분히 있다.</p>
+<h3>6. 다양성을 포용하라</h3>
+<p>스칼라 커뮤니티에는 전세계의 다양한 프로그래머들이 모여있다. 나처럼 전직 자바 개발자도 있고, 학계에서 온 사람들도 있다. 독학한 개발자도 있고 박사학위자들도 있다. 빠듯한 예산으로 사업문제를 해결하려 하는 사람들도 있고, 관심분야를 넓히려고 하는 사람들도 있다. 어플리케이션을 만드는 사람도 있고, 라이브러리를 만드는 사람도 있다.</p>
+<p>커뮤니티의 모든 사람을 존중하고 이해하는게 좋은 개발자가 되는데 중요하다. StackOverflow에 단순한 질문을 올렸는데, 이해하려면 카테고리 이론을 몇년 배워야하는 난해한 답변이 달릴지도 모른다. 하지만 스칼라는 아직 새로운 언어이고 커뮤니티는 자기 색깔을 찾아가고 있다는 것을 염두에 둬라. 학계 출신이 아닌 개발자들이 스칼라 세계에 더 많아지고 더 많이 답변하다보면 토론은 조금 더 <em>이론</em> 개념보다는 <em>어플리케이션</em> 개념으로 옮겨갈 것이다.</p>
+<p>답변에 실망했다면, 트위터의 <a target="_blank" rel="noopener" href="https://github.com/twitter/finagle">Finagle</a>이나 mDialog의 <a target="_blank" rel="noopener" href="https://github.com/mDialog/smoke">Smoke</a>같은 라이브러리들의 소스코드를 봐라. 두 프로젝트는 제품 레벨에서도 많이 쓰이는 구현체로 훌륭한 스칼라 예제이다. 모든 스칼라가 어마어마하게 복잡하지는 않다.</p>
+<h3>7. 현실적인 목표를 설정하라</h3>
+<p>자바에서 온 신입 스칼라 개발자들은 하룻밤만에 고급 스칼라, 함수형 스칼라를 배울 수 없다는 사실을 깨달아야한다. 전형적인 비지니스 어플리케이션을 성공적으로 개발하는데 고급 함수형 스칼라가 필요한건 아니다.</p>
+<p>함수형 프로그래밍을 접해본 개발자라면 스칼라 스타일로 익히데 시간이 덜 걸릴 것이다. 그렇지만 팀원들 대부분이 명령형 언어 개발자들이라면 스타일을 맞춰야할 것이다.</p>
+<p>그리고 팀 밸런스에 대한 것인데, 유지보수해야할 사람이 이해할 수 있는 코드를 짜야할 것이다. 아무리 전세계에서 가장 우아한 코드라도 관리할 수 없으면 쓸모없다.</p>
+<h3>8. 짝코딩과 코드리뷰는 의무</h3>
+<p>짝코딩을 하면 팀 전체 스타일과 기술 평균에서 너무 멀어지지 않게 해주는데 효과적이다. 마지막으로 바라는게 필멸자들이 감히 범접할 수 없는 어려운 코드를 짜거나, 팀원들이 다들 준비가 될 때까지 다시 완벽하게 작동하는 명령형 코드로 짜는 것이다. 실험은 중요하지만, git은 두었다 무엇하는가. 포크해라, 두번해라.</p>
+<figure>
+<img src="/images/transitioning-to-scala/2.png" /><figcaption class="image-caption">팀원들이 이렇게 된다</figcaption>
+</figure>
+<p>스칼라의 유연성 덕분에 복잡함의 칼날을 피하는 것도, 언어의 새 기능이나 스칼라의 표현력을 익히기 쉽다. 문화는 언제나 개발팀에게 중요하지만, 더 중요한건 스칼라를 처음 배울 때 다같이 페달을 밟아 나가야한다는 것이다.</p>
+<h3>9. 간결함을 유지하라</h3>
+<p>스칼라는 새로운 것이고, 사람들은 무엇을 써야하고 무엇을 피해야할지 여전히 배우는 중이다. 더글라스 크록포드가 스칼라를 마스터하고 <em>Scala: The Good Parts</em>를 쓰기 전까지는, 언어의 각 부분에 대한 가치를 알아서 확인해야한다. 옳고 그름은 없고, 단지 시도와 실패만 있을 뿐이다. 뭐가 더 맞는지에 대해 얼마든 질문해라.</p>
+<p>Reflection API가 처음 자바에 도입되었을 때, 모든 자바 개발자들이 자신들의 지적 능력을 동원해 <strong>모든 것</strong>에 리플렉션을 사용하려고 했다. 당시 내가 개발하던 코드들은 관리하기가 더럽게 복잡해졌고, 한 개발자가 미쳐날뛰어서 이해하지 못하는 기능을 남용했다는 것 말고 다른 이유는 없었다. 모든 생소한 기능은 발을 담그기 전에 천천히 깨끗하고 심플한 코드를 짜는게 더 낫다. 고급 테크닉을 이상하게 뒤죽박죽으로 구현한 것보다 깔끔하게 명령형 스타일로 스칼라 코딩을 하는게 차라리 낫다.</p>
+<figure>
+<img src="/images/transitioning-to-scala/3.jpg" /><figcaption class="image-caption">준비가 되기 전에 깊게 들어가지마라. 천천히 가자.</figcaption>
+</figure>
+<p>좋은 음악처럼 좋은 코드도 우아하고 드물다. 좋은 음식에 꼭 좋은 재료가 들어가는건 아니다. 상상할 수 있는 모든 향신료가 들어간 음식을 먹고 싶어할 사람이 있을까? 코드를 쓰는 것도 그렇다. A1급 개발자가 쓴 신뢰할만한 코드는 자기가 뭘 하고 있는지 왜 하는지도 모르며 제멋대로 짠 A3/L3급 개발자의 코드보다 더 관리하기 쉽다.</p>
+<h3>10. 구린 코드를 살펴봐라</h3>
+<p>심각하게 구린 스칼라 코드를 짤 수도 있고, 자바, 펄, 그리고 영어도 마찬가지다.</p>
+<p>하지만 구린 자바코드와 구린 스칼라코드의 중요한 차이가 있다.</p>
+<p>구린 스칼라 코드는 좀 다른 방식으로 구리다. 명령형으로 구리거나, 함수형으로 구리거나, 혹은 두가지가 섞인 채로 구리거나. 이해할 수 없을 정도로 구리다면 익숙하지 않은 스타일이라서 그럴 수도 있다. 스칼라는 새로운 언어라, 자바같은 성숙된 언어처럼 바로 안티패턴을 발견해내는게 아직은 어렵다. 그래서 개발팀들이 아름다운 코드를 구리다고 착각할 수도 있고, 구린 코드를 아름답다고 착각하게 될 수도 있다. 개발자들은 배운대로 구린 패턴을 짜기 시작하면 나중에는 더 구린 코드가 나온다. 그렇게 악순환이 된다.</p>
+<p>나중에 고치려고 하는 것보다 처음부터 피하는게 더 좋다.</p>
+<p>똑똑한 개발자가 스칼라로 이상하게 코딩한다면 불러봐라. 질문해라. 익히지 못한 언어에 대해 추측하지마라. 최악의 경우는, 잘못짰으면서 우아한 코드라고 생각은 하는데, <em>왜</em> 우아한지 이해하지 못하는 경우다.</p>
+<h3>11. 스칼라는 단지 퍼즐의 일부분</h3>
+<p>웹 어플리케이션을 개발하는 방법은 10년전에 비하면 매우 다양하다. 요새는 스칼라, 플레이, AngularJS, MongoDB 앱을 개발한다. 내가 짜는 코드 대부분은 클라이언트단이다. 몇년간은 스칼라보다 Angular를 더 많이 짰는데, 나쁘다는게 아니라 그냥 현실이 그렇다.</p>
+<p>스칼라의 미학은 자바처럼 쓸데없는 밑바닥을 만들어야하거나 루비같은 동적 언어의 불안함을 걱정할 필요없이 깔끔하고 안정적이고 성능좋은 서버단 코드를 짤 수 있게 해준다는 것이다. 스칼라로 짠 서버쪽 로직은 견고하기에 클라이언트쪽 코드를 안정적으로 짜는데 시간을 투자할 수 있다.</p>
+<p>스칼라의 모든 쪽에서 마스터가 되고 싶어하는만큼 파고들어야할 기술들이 너무 많다. HTML5, SASS, AngularJS, RequireJS, SQL, MongoDB, 또, 또, 또.</p>
+<p>한 언어의 모든 면을 마스터할 시간은 없겠지만, 스칼라는 맛을 보기만 해도 괜찮은 기술이다. <a target="_blank" rel="noopener" href="http://www.reactivemanifesto.org/">Reactive Programming</a>은 다음 세대의 대세가 될 것이며 그 패러다임 전환의 선두에 스칼라가 있을 것이라 믿는다. 성능과 안정성을 모두 얻을 수 있는 리엑티브 어플리케이션을 무시하기는 힘들다.</p>
+<p>요즘엔 대부분 묵직한 XML 대신 JSON을 쓴다. SOA 패턴 대신 REST를 쓴다. 데스크탑 대신 모바일을 쓴다. 어마어마한 크기의 데이터에서 필요한 정보를 뽑아낼 때, Akka의 성능이라면 막대한 하드웨어를 투자하지 않고서도 가능하다.</p>
+<p>스칼라는 퍼즐의 한 부분일 뿐이지만, 새로운 종류의 개발을 위해 필요한 다른 많은 부분들의 심장과도 같다.</p>
+<h3>12. 스칼라를 배우면 더 좋은 프로그래머가 된다</h3>
+<p>직장인 개발자가 자기 영역을 넓히는건 <em>정말</em> 드문 일이다. 소프트웨어 개발에서 완전히 다른 접근법을 배워본게 마지막으로 언제인가?</p>
+<p>마지막 전환(그리고 내 경력에서 겪었던 유일한 전환)은 절차지향 언어에서 객체지향 언어로의 변환이었다. CIBC에서 인턴하던 1998년에 운좋게도 첫 자바 어플리케이션 개발자 중 하나가 될 수 있었다. 대부분의 개발자들은 전직 COBOL이나 C였다가 전환하는 시점이었다. 요새는 뭐든 다 자바를 쓰지만, 당시에 윈도우와 OS/2에 모두 배포해야하는 상황에서 자바는 매우 실용적이었다.</p>
+<p>2-30년 경력의 개발자들(몇명은 실제로 펀치카드로 프로그래밍을 해봤던)과 일하면서 좋은 경험을 쌓았고, 한가지 스타일에 매이면 안된다는 것을 깨달았다. 자바를 배울 때 JCL도 관리해야했다. 바로 다시 복귀하기 몇달전까지는 old COBOL과 360 어셈블리도 파고들었다. 넓게 보자. JCL과 COBOL이 섹시한 언어는 아니지만 필요한 분야에서는 괜찮은 언어다. 인턴시절 스몰토크에서 엑셀까지 모든 것을 겪어볼 수 있었다.  엑셀은 처음 접한 함수형 프로그래밍이다. (역주: 엑셀이 함수형 프로그래밍을 지원하는지에 대한 <a target="_blank" rel="noopener" href="http://programmers.stackexchange.com/questions/125990/questions-over-excel-programming">StackExchange</a>의 글이 댓글에 있다.)</p>
+<p>스칼라는 부당한 평을 많이 받았다. 어떤 개발자들은 생각을 깊게 하기보다는 잠깐 시도해보고 익숙한 언어로 도망친다. 문제는 그 사람들이 인터넷에 남긴 불평들 때문에 관심있어하는 개발자들에게 언어의 가치가 잘못 전달될 수도 있다.</p>
+<p>스칼라에 대한 불만을 읽는다면 누가 썼는지 찾아보기를. 다른걸 원한 사람일 수도 있다. 쉽게 흔들리지 말고, 불평하는 사람들에게 얽매이지 마라. 점점 널리 퍼져가는 스칼라의 성공사례들을 찾아보기를 바란다.</p>
+<h3>결론</h3>
+<p>스칼라는 기술뿐만이 아니라 문화적인 투자다. 투자할만한 가치가 있는 보상이 있는데, 어쨋든 해봐야하지 않을까? 확장가능하고 믿을만하고 관리하기 편한 프로젝트를 진행중이라면, 혹은 프로그래머로서 사고를 확장하고 싶다면 단언컨데 스칼라는 할만 하다. 기본만 있으면 보이는 것만큼 어렵지도 않다.</p>
+<p>스칼라는 실무에서도 쓸만하다는걸 기억해라, 아니 이미 쓰이고 있다.</p>
+<style type="text/css">
+.image-caption {
+position: relative;
+width: 100%;
+text-align: center;
+left: 0;
+margin-top: 10px;
+letter-spacing: .01rem;
+font-weight: 400;
+font-style: italic;
+font-size: 14px;
+line-height: 1.4;
+color: #666665;
+outline: 0;
+z-index: 300;
+}
+</style></div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/scala/" class="post__tag__link">scala</a></li><li class="post__tag__item"><a href="/tags/translation/" class="post__tag__link">translation</a></li></ul><a href="/2015/01/18/transitioning-to-scala/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2021 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><a title="Previous" href="/2015/05/28/callback-to-future-functor-applicative-monad/" class="page-menu__link icon-arrow-left"></a></li><li class="page-menu__item"><a title="Next" href="/2015/01/18/pis-review/" class="page-menu__link icon-arrow-right"></a></li></menu></footer></body></html>

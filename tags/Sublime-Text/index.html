@@ -1,0 +1,23 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>Sublime Text - devthewild</title>
+<link rel="stylesheet" href="/css/main.css">
+<!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><meta name="generator" content="Hexo 5.4.0"></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2014-06-24T15:00:00.000Z" class="post__time">June 25, 2014</time><h1 class="post__title"><a href="/2014/06/25/build-swift-file-on-sublime-text/">Sublime Text에서 swift파일 빌드하기</a></h1></header><div class="post__main echo"><h4>조건</h4>
+<ul>
+<li>Sublime Text와 <a target="_blank" rel="noopener" href="https://sublime.wbond.net/installation">Package Control</a>이 설치되어 있을 것</li>
+<li>Swift 개발 환경이 설정되어있을 것</li>
+</ul>
+<h4>순서</h4>
+<ul>
+<li>Package Control을 통해 Swift 패키지 설치</li>
+<li>Tools &gt; Build System &gt; New Build System... 에서 다음과 같이 입력한다.</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;cmd&quot;</span>: [<span class="string">&quot;swift&quot;</span>, <span class="string">&quot;-i&quot;</span>, <span class="string">&quot;$file&quot;</span>],</span><br><span class="line">    <span class="attr">&quot;selector&quot;</span>: <span class="string">&quot;source.swift&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>빌드 정보를 저장한다. (예, <code>Swift.sublime-build</code>)</li>
+<li>cmd + B로 빌드한다.</li>
+</ul>
+<p><img src="/images/build-swift-file-on-sublime-text/swift-sublime-build.png" alt=""></p>
+<h4>부연 설명</h4>
+<p>Swift 패키지를 설치하면 문법 강조는 기본으로 지원하고 각종 Snippet을 지원해서 Xcode만큼은 아니더라도 편하게 작성할 수 있다.</p>
+<p><img src="/images/build-swift-file-on-sublime-text/swift-sublime-snippet.png" alt=""></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/quiqueg/Swift-Sublime-Package">Swift 패키지 프로젝트</a>에서 패키지 파일들을 확인하면 보다 자세한 정보를 알 수 있다.</p>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/Sublime-Text/" class="post__tag__link">Sublime Text</a></li><li class="post__tag__item"><a href="/tags/swift/" class="post__tag__link">swift</a></li></ul><a href="/2014/06/25/build-swift-file-on-sublime-text/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2021 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><span title="Next" class="page-menu__link icon-arrow-right page-menu__link--disabled"></span></li></menu></footer></body></html>

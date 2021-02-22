@@ -1,0 +1,583 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="description" content="most opinionated blog"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="alternative" href="/atom.xml" title="devthewild" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title>monad - devthewild</title>
+<link rel="stylesheet" href="/css/main.css">
+<!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><meta name="generator" content="Hexo 5.4.0"></head><body><header class="head"><h1 class="head-title u-fl"><a href="/">devthewild</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a href="/" class="head-nav__link">Home</a></li><li class="head-nav__item"><a href="/archives" class="head-nav__link">Archives</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time datetime="2015-08-04T13:58:10.000Z" class="post__time">August 4, 2015</time><h1 class="post__title"><a href="/2015/08/04/wtf-4-parser/">WTF - 4. 모나드 분자식 파서(Monadic Molecule Parser)</a></h1></header><div class="post__main echo"><blockquote>
+<p>What is the Functional?</p>
+<ol>
+<li><a href="/2015/08/04/wtf-1-intro/">Introduction</a></li>
+<li><a href="/2015/08/04/wtf-2-adt/">Algebraic Data Type</a></li>
+<li><a href="/2015/08/04/wtf-3-fam/">Maybe or Not</a></li>
+<li><a href="/2015/08/04/wtf-4-parser/">Monadic Molecule Parser</a></li>
+</ol>
+</blockquote>
+<p>Codewars에 분자식(문자열)에서 원자들이 몇 개인지 세는 문제가 있었다. 이미
+제출한 답은 다음과 같은 구조였다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> token = <span class="function">(<span class="params">str</span>) =&gt;</span> str.match(regToken);</span><br><span class="line"><span class="keyword">const</span> lexer = <span class="function">(<span class="params">arr</span>) =&gt;</span> arr.reduce(<span class="function">(<span class="params">r,t</span>) =&gt;</span> ..., [])</span><br><span class="line"><span class="keyword">const</span> parse = <span class="function">(<span class="params">form</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> syms = lexer(token(formula));</span><br><span class="line">  <span class="keyword">let</span> offset = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">let</span> buffer = traverse();</span><br><span class="line">  <span class="keyword">return</span> evaluate(buffer);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">evaluate</span>(<span class="params">array</span>) </span>&#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>옛날에 컴파일러 수업을 들었던 게 대충 생각나서 그래도 tokenizer로 식을 token
+단위로 끊고, lexer로 symbol로 만들고(원래는 scan할 때 한 번에 하는 작업이었던
+것으로 기억하지만), parse에서 Parse Tree를 만들어서 evaluator에서
+실행(계산)하도록 만들려고 짜다가 구현을 할수록 구조는 복잡해지는데 비해 난이도는
+올라가서 그냥 뒷부분은 한군데 섞어버렸다. 배운 걸 써먹기 위해서 이걸 다시
+Haskell로 도전해보았다. 일단 문제를 단순화시켜서 괄호 없는 분자식을 구현해보자.
+규칙은 다음과 같다.</p>
+<ol>
+<li>원소기호는 대분자와 소문자, 혹은 대문자로 이루어진다.</li>
+<li>개수는 원소기호 뒤에 오는 0자리 이상의 숫자로 없다면 1이 된다.</li>
+<li>원소기호와 개수를 합쳐서 동원소분자(homoatomic; 물론 제대로 된 명칭인지는
+모름)라고 부른다.</li>
+<li>분자식은 동원소분자가 1개 이상 이어진다.</li>
+</ol>
+<p>BNF라는 명칭만 기억나고 정확한 내용은 기억나지 않지만 비슷하게 옮겨보자면</p>
+<ul>
+<li>molecules  = homoatomic  | molecules</li>
+<li>homoatomic = atom amount | atom</li>
+</ul>
+<p>이제 이걸 적용할 수 있는 파서를 만들어보자. 일단 파서의 적절한 타입을
+만들어야 하는데, 함수형에서는 어떤 흐름을 기록하는데 자주 쓰이는
+<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Monad_(functional_programming)#State_monads">State</a>라는
+패턴이 있다. 모양은 대충 <code>type State s a = s -&gt; (a, s)</code>가 된다. 즉, 현재의 어떤
+상태<code>s</code>에서 그 상태에서 원하는 결과 <code>a</code>와 다음 상태<code>s</code>를 동시에 가져오게 된다.
+상태는 변이(tramsform)되지만 원하는 값을 얻으면서 변수의 불변성(immutability)도
+만족해서, 메모리만 충분하다면 구조에 따라 상태 변이를 기록할 수 있어서 추적하기
+쉽다는 장점이 있다. 다시 돌아와서, State처럼 파싱할 문자열을 받아서 어떤 연산을
+규칙에 맞는 결과물 <code>T</code>를 가져온 뒤 남은 문자열과 함께 돌려주는 일종의 State같은
+타입을 Parser라고 정의해서 사용할 것이다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// type Parser[T] = String -&gt; (T, String)</span></span><br></pre></td></tr></table></figure>
+<p>먼저 앞에서 구현했던 것처럼 token을 가져오는 Parser를 만들어보자. Haskell의
+경우에는 강한 타입에다 패턴 매칭을 지원하는 언어라서 원하는 타입이나 원하는
+형태가 아니면 실패했다고 돌려줄 수 있지만, JavaScript는 둘 다 지원되지 않아서
+내가 원하는 것이 맞는지 글자를 소모하지 않고 확인할 수 있는 기능과 글자를
+소모해서 원하는 것인지 확인하는 기능 두 가지를 통해 tokenizer를 구현할 수 있다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// Parser =&gt; Parser</span></span><br><span class="line"><span class="keyword">const</span> ahead   = <span class="function"><span class="params">p</span> =&gt;</span> <span class="function">(<span class="params">str</span>) =&gt;</span> p(str) ? [<span class="string">&#x27;&#x27;</span>, str] : [];</span><br><span class="line"><span class="comment">///// Parser =&gt; Parser</span></span><br><span class="line"><span class="keyword">const</span> satisfy = <span class="function"><span class="params">p</span> =&gt;</span> <span class="function">(<span class="params">str</span>) =&gt;</span> p(str) ? [str[<span class="number">0</span>], str.substr(<span class="number">1</span>)] : [];</span><br></pre></td></tr></table></figure>
+<p>실패<code>[]</code>의 경우는 같고, 성공할 경우에 <code>ahead</code>는 아무것도 매칭하지 않은 채
+원래의 문자열<code>str</code>을 돌려주고, <code>satisfy</code>의 경우 매칭된 글자와 나머지 문자열을
+돌려준다. 원래는 튜플(Tuple)로 구현하는 게 좋지만, JavaScript에 그런 게
+있을 리가.</p>
+<p>이제 다음 글자가 대문자라는 파서를 만들려면 다음과 같이 만들면 된다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> upper = satisfy(<span class="function"><span class="params">ch</span> =&gt;</span> <span class="string">&#x27;A&#x27;</span> &lt;= ch[<span class="number">0</span>] &amp;&amp; ch[<span class="number">0</span>] &lt;= <span class="string">&#x27;Z&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log( upper(<span class="string">&quot;H&quot;</span>) ); <span class="comment">// [ &#x27;H&#x27;, &#x27;&#x27; ]</span></span><br></pre></td></tr></table></figure>
+<p>하지만 타입 확인도 패턴 매칭도 존재하지 않아서 적절한 입력인지 확인할 수 있는
+규칙과 그것을 합성할 수 있는 기능이 필요하다. 물론 합성 기능은 다음 글자가
+소문자라는 파서를 만들었을 때 그 파서와 합성하는 데 사용할 수도 있다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// (Parser, Parser) -&gt; Parser</span></span><br><span class="line"><span class="keyword">const</span> and = <span class="function">(<span class="params">pa, pb</span>) =&gt;</span> <span class="function">(<span class="params">str</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> ra = pa(str);</span><br><span class="line">  <span class="keyword">if</span>(ra.length === <span class="number">0</span>) <span class="keyword">return</span> [];</span><br><span class="line">  <span class="keyword">const</span> rb = pb(ra[<span class="number">1</span>]);</span><br><span class="line">  <span class="keyword">if</span>(rb.length === <span class="number">0</span>) <span class="keyword">return</span> [];</span><br><span class="line">  <span class="keyword">return</span> [ra[<span class="number">0</span>] + rb[<span class="number">0</span>], rb[<span class="number">1</span>]];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>이제 첫 번째 파서가 성공할 경우 <code>[match1, rest1]</code>를 받아서 <code>rest1</code>을 다음 파서에
+넘겨서 <code>[match2, rest2]</code>를 가져온 뒤에 <code>[match1 + match2, rest2]</code>라는 결과를
+만들어주는 파서를 생성할 수 있게 되었다. 물론 둘 중 하나라도 실패하면 실패<code>[]</code>가
+리턴된다. 이걸 사용해서 소문자 확인과 결합해보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> lower = satisfy(<span class="function"><span class="params">ch</span> =&gt;</span> <span class="string">&#x27;a&#x27;</span> &lt;= ch[<span class="number">0</span>] &amp;&amp; ch[<span class="number">0</span>] &lt;= <span class="string">&#x27;z&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(and(upper, lower)(<span class="string">&quot;Mg&quot;</span>)); <span class="comment">// [ &#x27;Mg&#x27;, &#x27;&#x27; ]</span></span><br></pre></td></tr></table></figure>
+<p>그리고 앞서 만들어놓은 <code>ahead</code>와 더불어 원하는 조건인지 확인을 합성할 수도 있다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> chr   = ahead(<span class="function"><span class="params">str</span> =&gt;</span> str.length &gt; <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> upper = and(chr, satisfy(<span class="function"><span class="params">ch</span> =&gt;</span> <span class="string">&#x27;A&#x27;</span> &lt;= ch[<span class="number">0</span>] &amp;&amp; ch[<span class="number">0</span>] &lt;= <span class="string">&#x27;Z&#x27;</span>));</span><br><span class="line"><span class="keyword">const</span> lower = and(chr, satisfy(<span class="function"><span class="params">ch</span> =&gt;</span> <span class="string">&#x27;a&#x27;</span> &lt;= ch[<span class="number">0</span>] &amp;&amp; ch[<span class="number">0</span>] &lt;= <span class="string">&#x27;z&#x27;</span>));</span><br><span class="line"><span class="keyword">const</span> digit = and(chr, satisfy(<span class="function"><span class="params">ch</span> =&gt;</span> <span class="string">&#x27;0&#x27;</span> &lt;= ch[<span class="number">0</span>] &amp;&amp; ch[<span class="number">0</span>] &lt;= <span class="string">&#x27;9&#x27;</span>));</span><br></pre></td></tr></table></figure>
+<p>다음 글자가 존재하는지, 존재할 때 원하는 범위의 글자가 맞는지를 한 번에 확인할
+수 있는 파서들이 만들어졌다. 이제 원소기호를 파싱할 때 대문자와 소문자가
+연속으로 올 때도 있지만, 대문자만 존재할 수 있으니 <code>or</code>를 만들어보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// (Parser, Parser) -&gt; Parser</span></span><br><span class="line"><span class="keyword">const</span> or = <span class="function">(<span class="params">pa, pb</span>) =&gt;</span> <span class="function">(<span class="params">str</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> r = pa(str);</span><br><span class="line">  <span class="keyword">if</span>(r.length &gt; <span class="number">0</span>) <span class="keyword">return</span> r;</span><br><span class="line">  <span class="keyword">else</span>             <span class="keyword">return</span> pb(str);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>and</code>처럼 파서 두 개를 받아서 새로운 파서를 만들어주는데, 차이는 첫 번째 파서가
+실패하면 바로 실패했다는 결과를 넘겨주고 뒤의 규칙은 확인하지 않으며, 두 번째
+파서가 실패할 경우에는 그 자체가 실패의 결괏값이므로 그냥 넘겨주면 된다. 이걸로
+원소기호를 가져와 보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> atom   = or(and(upper, lower), upper);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(atom(<span class="string">&quot;Mg&quot;</span>)); <span class="comment">// [ &#x27;Mg&#x27;, &#x27;&#x27; ]</span></span><br><span class="line"><span class="built_in">console</span>.log(atom(<span class="string">&quot;H&quot;</span>));  <span class="comment">// [ &#x27;H&#x27;, &#x27;&#x27; ]</span></span><br></pre></td></tr></table></figure>
+<p>이제 둘 다 만족하게 되었다. 그럼 다음은 숫자를 0개 이상 받을 때인데, 재귀적인
+규칙이라 앞에서 구현한 것들보다 약간 복잡해진다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> amount = or(and(digit, amount), digit);</span><br></pre></td></tr></table></figure>
+<p>ES6에서 생긴 상수/변수인 <code>const</code>와 <code>let</code>은 호이스팅(hoisting)되지 않아서 이렇게
+만들면 작동하지 않는다. 그래서 함수가 실행된 뒤에 <code>amount</code>를 읽을 수 있도록
+소스가 약간 길어지지만 감수하면서 만들자면 다음과 같다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> amount = <span class="function">(<span class="params">str</span>) =&gt;</span> or(and(digit, amount), digit)(str);</span><br></pre></td></tr></table></figure>
+<p>하지만 0개 이상을 읽는 경우가 이번뿐이 아니므로 이걸 좀 다듬어보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> many = <span class="function">(<span class="params">p</span>) =&gt;</span> <span class="function">(<span class="params">str</span>) =&gt;</span> or(and(p, many(p)), p)(str);</span><br><span class="line"><span class="keyword">const</span> amount = many(digit);</span><br></pre></td></tr></table></figure>
+<p>이제 <code>many</code>를 사용하면 나머지를 완성할 수 있다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> homo   = or(and(atom, amount), atom);</span><br><span class="line"><span class="keyword">const</span> mole   = many(homo);</span><br></pre></td></tr></table></figure>
+<p>원소기호와 개수가 나오는 경우 혹은 원소기호만 있는 경우가 0번 이상 반복되는 것을
+분자식이라고 한다. 아예 받지 않거나 실패하는 경우에는 아무것도 출력하지 않도록
+결과를 다듬어보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> parse  = <span class="function">(<span class="params">p</span>) =&gt;</span> <span class="function">(<span class="params">str</span>) =&gt;</span> or(p, <span class="function">(<span class="params">str</span>) =&gt;</span> [<span class="string">&#x27;&#x27;</span>, str])(str)[<span class="number">0</span>];</span><br><span class="line"><span class="built_in">console</span>.log(parse(mole)(<span class="string">&quot;H2O&quot;</span>)); <span class="comment">// H2O</span></span><br></pre></td></tr></table></figure>
+<p>이제 <code>satisfy(ch=&gt;ch=='(')</code> 같은 식으로 열고 닫는 괄호를 3종류로 나누어서 규칙을
+만들고 <code>and</code>와 <code>or</code>로 잘 조합하면 원래 문제의 답을 얻을 수 있을 것이다. 맨 위에
+적어놓은 것보다 훨씬 깔끔한 구조로 함수들을 연결해서 답을 만들어냈다. 다만 현재
+JavaScript 엔진들은 스코프를 생성하는 비용이 비싸서 함수 호출이 많아질수록 꽤
+느려질 수 있다. 다만 불변성 구조가 유행하고 있고 엔진들도 최적화가 많이 진행되고
+있으므로 trade-off를 통해 성능은 비슷하지만 구조는 깔끔하게 만들 수 있지 않을까
+기대한다.</p>
+<p>예전에 Rx, LINQ 등을 만든 에릭 마이어(Erik Meijer)가 edX에서 함수형 프로그래밍
+입문을 강의한다길래 반가운 마음에 들어봤는데, 이상한 아저씨가 이상한 배경에
+하이톤으로 함수형에 대해 역사부터 열심히 설명하길래 거기까지만 듣고 포기했던
+적이 있다. 이번에 읽은 책이 Haskell 자체보다는 함수형 개념에 관해 설명한 책이라
+Haskell로 문제를 풀어보면서 모르는 게 있어서 리뷰하려고 다시 들어봤더니 여전히
+그 배경은 적응이 안 되지만 그래도 친절하고 좋은 강의였다(참고로 아래의 Contents
+링크에 들어가면 화질별 강의와 슬라이드, 자막이 있다). 10월 15일에 다음 강의가
+열리는데, 함수형이나 Haskell 입문에 관심 있는 분들께는 시각적인 어려움을
+참작하고라도 매우 도움이 되는 강의니 추천한다.</p>
+<p>ps, 구직중</p>
+<hr>
+<p>Reference</p>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://www.cs.nott.ac.uk/~gmh/monparsing.pdf">Monadic Parser Combinators - Graham Hutton, Erik Meijer</a></p>
+</li>
+<li>
+<p>Codewars</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.codewars.com/kata/molecule-to-atoms">Molecule to atoms</a></li>
+</ul>
+</li>
+<li>
+<p>Hackage: Official Haskell Package archive</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://hackage.haskell.org/package/base-4.8.1.0/docs/Text-ParserCombinators-ReadP.html">Text.ParserCombinators.ReadP</a></li>
+</ul>
+</li>
+<li>
+<p>Haskell/Wikibooks</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikibooks.org/wiki/Haskell/ParseExps">Haskell/ParseExps</a></li>
+</ul>
+</li>
+<li>
+<p>FP101x</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.edx.org/course/introduction-functional-programming-delftx-fp101x-0">edX course 10/15~</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/fptudelft/FP101x-Content">Contents</a></li>
+</ul>
+</li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/functional/" class="post__tag__link">functional</a></li><li class="post__tag__item"><a href="/tags/monad/" class="post__tag__link">monad</a></li></ul><a href="/2015/08/04/wtf-4-parser/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article><article class="post"><header class="post__head"><time datetime="2015-08-04T13:58:04.000Z" class="post__time">August 4, 2015</time><h1 class="post__title"><a href="/2015/08/04/wtf-3-fam/">WTF - 3. Maybe or Not</a></h1></header><div class="post__main echo"><blockquote>
+<p>What is the Functional?</p>
+<ol>
+<li><a href="/2015/08/04/wtf-1-intro/">Introduction</a></li>
+<li><a href="/2015/08/04/wtf-2-adt/">Algebraic Data Type</a></li>
+<li><a href="/2015/08/04/wtf-3-fam/">Maybe or Not</a></li>
+<li><a href="/2015/08/04/wtf-4-parser/">Monadic Molecule Parser</a></li>
+</ol>
+</blockquote>
+<h2>Maybe</h2>
+<p>바로 앞에서 언급했듯이 최근에 생겼거나 메이저 업데이트를 한 언어들이라면 대부분
+지원하는 Maybe(Optional, Option)라는 타입이 있다. 값을 가지고 있는 Just라는
+타입과 값이 없는 Nothing이라는 타입 중 하나가 되는 섬 타입이다. 일단 함수형이니
+하는 이야기는 잠시 미뤄두고 간단하게 Maybe를 만들어보자. Maybe의 정의를 간단하게
+표현해보자면 다음과 같다.</p>
+<figure class="highlight haskell"><figcaption><span>Haskell</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">data</span> <span class="type">Maybe</span> a = <span class="type">Just</span> a | <span class="type">Nothing</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Maybe</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">toString</span>(<span class="params"></span>)</span> &#123; <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&quot;Must be implemented.&quot;</span>); &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Just</span> <span class="keyword">extends</span> <span class="title">Maybe</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">v</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    <span class="built_in">this</span>.value = v;</span><br><span class="line">    <span class="built_in">Object</span>.freeze(<span class="built_in">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">toString</span>(<span class="params"></span>)</span> &#123; <span class="keyword">return</span> <span class="string">`Just <span class="subst">$&#123;<span class="built_in">this</span>.value.toString()&#125;</span>`</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Nothing</span> <span class="keyword">extends</span> <span class="title">Maybe</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">v</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    <span class="built_in">Object</span>.freeze(<span class="built_in">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="title">toString</span>(<span class="params"></span>)</span> &#123; <span class="keyword">return</span> <span class="string">&quot;Nothing&quot;</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> nothing = <span class="keyword">new</span> Nothing();</span><br></pre></td></tr></table></figure>
+<p>정의는 단순하지만 같은 내용을 JavaScript로 구현하면 다소 길어진다.  소스를 보면
+알겠지만, Just는 생성될 때만 값을 받을 수 있고 생성된 후에는 값을 변경할 수
+없다.  이제 이 Maybe를 어떻게 다룰지에 대해서 생각을 해보자. Maybe 타입을 통해
+어떤 연산을 하고 싶을 때 메소드를 추가해서 Maybe를 계속 생산하도록 만들면
+편하겠지만, 값이 있다 없다의 속성을 가질 수 있다면 Maybe의 연산 결과를 Maybe라고
+유지하고, 값이 없을 때는 계속 값이 없도록 유지하려면 그 결괏값을 보장해줘야한다.
+이걸 만족하는 연산들을 생각해보자.</p>
+<ol>
+<li>값을 Maybe로 감싸서 새로운 Maybe를 만들어준다.</li>
+<li>Maybe의 값에 그 값을 처리하는 함수를 적용하고 싶다.</li>
+<li>그런데 그 함수가 Maybe의 값일 수도 있다.</li>
+<li>함수의 결괏값 자체가 Maybe라면 어떨까?</li>
+</ol>
+<p>1번의 구현은 간단하다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// unit : a -&gt; Maybe a</span></span><br><span class="line"><span class="keyword">const</span> unit = <span class="function">(<span class="params">x</span>) =&gt;</span> <span class="keyword">new</span> Just(x)</span><br></pre></td></tr></table></figure>
+<p>값만 존재할 때는 두 배로 만들려면 단순히 <code>x * 2</code>를 하면 되지만, Maybe로 감싸져
+있으니 바로 적용하기 어렵다. 그러니 2번처럼 값을 처리하는 함수를 적용할 수 있는
+기능을 구현해보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> isNothing = <span class="function">(<span class="params">m</span>) =&gt;</span></span><br><span class="line">  m.constructor.name === <span class="string">&quot;Nothing&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">///// fmap : Maybe a, (a -&gt; b) -&gt; Maybe b</span></span><br><span class="line"><span class="keyword">const</span> fmap = <span class="function">(<span class="params">m, fn</span>) =&gt;</span></span><br><span class="line">  isNothing(m)</span><br><span class="line">    ? <span class="keyword">new</span> Nothing</span><br><span class="line">    : <span class="keyword">new</span> Just(fn(m.value))</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> doub = <span class="function">(<span class="params">d</span>) =&gt;</span> d * <span class="number">2</span></span><br><span class="line"><span class="built_in">console</span>.log( fmap(unit(<span class="number">1</span>), doub).toString() ); <span class="comment">// Just 2</span></span><br><span class="line"><span class="built_in">console</span>.log( fmap(nothing, doub).toString() ); <span class="comment">// Nothing</span></span><br></pre></td></tr></table></figure>
+<p>Maybe의 값이 함수일 경우에 그 함수를 다른 Maybe의 값에 적용해보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// appl : Maybe (a -&gt; b), Maybe a -&gt; Maybe b</span></span><br><span class="line"><span class="keyword">const</span> appl = <span class="function">(<span class="params">mfn, ma</span>) =&gt;</span></span><br><span class="line">  isNothing(mfn) || isNothing(ma)</span><br><span class="line">    ? <span class="keyword">new</span> Nothing()</span><br><span class="line">    : unit(mfn.value(ma.value))</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> mdoub = unit(doub);</span><br><span class="line"><span class="built_in">console</span>.log( appl(mdoub, nothing).toString() ); <span class="comment">// Nothing</span></span><br><span class="line"><span class="built_in">console</span>.log( appl(mdoub, unit(<span class="number">1</span>)).toString() ); <span class="comment">// Just 2</span></span><br></pre></td></tr></table></figure>
+<p>그런데 모양을 보면 <code>fmap</code>과 비슷해서 <code>fmap</code>을 재사용해서 구현할 수도 있다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> appl2 = <span class="function">(<span class="params">mfn, ma</span>) =&gt;</span></span><br><span class="line">  isNothing(mfn)</span><br><span class="line">    ? <span class="keyword">new</span> Nothing()</span><br><span class="line">    : fmap(ma, mfn.value)</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log( appl2(mdoub, nothing).toString() ); <span class="comment">// Nothing</span></span><br><span class="line"><span class="built_in">console</span>.log( appl2(mdoub, unit(<span class="number">1</span>)).toString() ); <span class="comment">// Just 2</span></span><br></pre></td></tr></table></figure>
+<p>이제 마지막으로 함수의 결과 자체가 Maybe일 경우를 생각해보자.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// bind :  Maybe a, (a -&gt; Maybe b) -&gt; Maybe b</span></span><br><span class="line"><span class="keyword">const</span> bind = <span class="function">(<span class="params">ma, fn</span>) =&gt;</span></span><br><span class="line">  isNothing(ma)</span><br><span class="line">    ? <span class="keyword">new</span> Nothing()</span><br><span class="line">    : fn(ma.value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> udoub = <span class="function">(<span class="params">d</span>) =&gt;</span> unit(doub(d));             <span class="comment">// a -&gt; Maybe b</span></span><br><span class="line"><span class="built_in">console</span>.log( bind(nothing, udoub).toString() ); <span class="comment">// Nothing</span></span><br><span class="line"><span class="built_in">console</span>.log( bind(unit(<span class="number">1</span>), udoub).toString() ); <span class="comment">// Just 2</span></span><br></pre></td></tr></table></figure>
+<p>지금까지의 구현에서 JavaScript 자체의 복잡한 기능을 사용한 곳은 없다. 구현
+자체가 어렵지도 않고 짧아서 여기까지는 다들 이해할 수 있을 것으로 생각한다.
+그런데 안에 값을 넣을 수 있는 타입 중에서 개발자들이 항상 사용하고 있으며,
+다들 사용법에 대해 아주 잘 알고 있는 타입이 하나 있다. 이제 Maybe를 <code>Array</code>와
+비교해보자.</p>
+<h2>F, A, M with Array</h2>
+<h3>1. Functor</h3>
+<p>앞에서 구현했던 <code>fmap</code>에서 설명을 돕기 위해 구현 위에 주석으로 타입을 적어놓은
+것이 있다. 처음에는 Haskell 식으로 타입을 적었다가 이해하기 편하도록 수정했더니
+무슨 언어인지 모를 내용이 되긴 했지만.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// fmap : Maybe a, (a -&gt; b) -&gt; Maybe b</span></span><br></pre></td></tr></table></figure>
+<p>값을 가지고 있는 타입과 값을 변환하는 함수를 받아서 다른 값을 가지고 있는
+타입으로 변환해준다. 이걸 이해하기 좋게 조금 수정해보자면,</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// amap : Array a, (a -&gt; b) -&gt; Array b</span></span><br><span class="line"><span class="keyword">const</span> amap = <span class="function">(<span class="params">arr, fn</span>) =&gt;</span> arr.map(fn);</span><br><span class="line"><span class="built_in">console</span>.log( amap([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>], (<span class="function"><span class="params">n</span> =&gt;</span> <span class="built_in">String</span>(n))) );  <span class="comment">// [ &#x27;1&#x27;, &#x27;2&#x27;, &#x27;3&#x27; ]</span></span><br></pre></td></tr></table></figure>
+<p>a라는 타입의 값을 가지고 있는 어떤 타입을 ⓐ라고 하고, b의 경우를 ⓑ라고 하면,
+(a -&gt; b) 함수를 통해 결과적으로 (ⓐ -&gt; ⓑ)를 만족하도록 연산할 수 있는 타입을
+Functor라고 부른다. Array에서는 그런 연산을 해주는 <code>map</code> 메소드를 가지고 있다.</p>
+<h3>2. Applicative Functor</h3>
+<p>순서대로 <code>fmap</code> 다음에 구현했던 <code>appl</code>을 이야기할 차례다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// appl : Maybe (a -&gt; b), Maybe a -&gt; Maybe b</span></span><br></pre></td></tr></table></figure>
+<p>applicative라는 표현 그대로 어딘가에 적용할 수 있는 Functor이다. 즉, 함수를
+가지고 있는 Functor.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> doub = <span class="function"><span class="params">d</span> =&gt;</span> d * <span class="number">2</span>;</span><br><span class="line"><span class="keyword">const</span> incr = <span class="function"><span class="params">d</span> =&gt;</span> d + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">///// Array (a -&gt; b), Array a -&gt; Array b</span></span><br><span class="line"><span class="keyword">const</span> appl = <span class="function">(<span class="params">fns, <span class="keyword">as</span></span>) =&gt;</span> fns.map(<span class="function"><span class="params">fn</span> =&gt;</span> <span class="keyword">as</span>.map(fn))</span><br><span class="line">                             .reduce(<span class="function">(<span class="params">r,b</span>) =&gt;</span> r.concat(b), [])</span><br><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  appl( [doub, incr], [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>] )</span><br><span class="line">); <span class="comment">// [ 2, 4, 6, 2, 3, 4 ]</span></span><br></pre></td></tr></table></figure>
+<p>이렇게 (a -&gt; b)를 가지고 있는 Array와 Array a를 통해 Array b를 만들었다. 위에서
+말했듯 함수를 가지고 있는 Functor(Array (a -&gt; b))와 다른 Functor(Array a)를 통해
+다른 Functor(Array b)를 만들어내는 Applicative Functor를 <code>map</code>을 사용해서 간단히
+구현해보았다. 하지만 Applicative Functor 자체를 본 적이 별로 없어서 내가 맞게
+이해하고 있는 것인지 잘 모르겠다.</p>
+<h3>3. Monad</h3>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///// bind :  Maybe a, (a -&gt; Maybe b) -&gt; Maybe b</span></span><br></pre></td></tr></table></figure>
+<p>JavaScript에서는 <a target="_blank" rel="noopener" href="https://lodash.com/">lodash</a>같은 라이브러리를 사용하지 않은
+사람에게 익숙하지 않은 개념일 수 있지만, 다른 함수형 언어들을 써본 사람이라면
+Sequence 종류에서 기본적으로 지원해주는 익숙한 개념이 있다.</p>
+<figure class="highlight js"><figcaption><span>JavaScript</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> flatMap = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>.map(fn).reduce(<span class="function">(<span class="params">r,a</span>) =&gt;</span> r.concat(a), [])</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(</span><br><span class="line">  [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]::flatMap(<span class="function"><span class="params">d</span> =&gt;</span> <span class="built_in">Array</span>(d).fill(d))</span><br><span class="line">); <span class="comment">// [ 1, 2, 2, 3, 3, 3 ]</span></span><br></pre></td></tr></table></figure>
+<p>바로 <code>flatMap</code>(간혹 <code>concatMap</code>)이라는 개념인데, (a -&gt; ⓑ) 함수를 통해
+(ⓐ -&gt; ⓑ)를 만족하는 함수를 말한다. <code>[1, [2], [[3]]]</code>처럼 깊이가 다른 배열을
+1차원으로 합치는 함수를 flatten이라고 표현하는데, flatten + map이 아닐까 싶다.
+Haskell에서는 Monad라면 Applicative Functor를 만족하고, Applicative Functor라면
+Functor를 만족한다. 즉 Monad &gt; Applicative &gt; Functor로 상속하는 구조다. 잠깐
+접해본 짧은 생각으로는 독립적인 개념으로 봐도 될 것 같은데(굳이 따지자면
+Functor와 Applicative 정도는 has-a로 봐도 될 것 같지만), 내가 놓치고 있는 뭔가가
+있는 것 같다.</p>
+<hr>
+<p>이렇게 대수형 타입끼리 어떻게 연산하는지의 패턴들에 대해 알아봤는데, 왜 이렇게
+복잡한 설명과 패턴을 통해 타입을 유지해야 하는가 싶은 생각이 들 수 있다. 가장
+기본이 되는 개념은 간단한 개념이니 이것만 알면 된다! 라는 식의 글을 참 많이
+봤는데, 내가 원점에 있을 때 (10, 0)쯤에 있던 글보다 쉽다는 글은 (0, 10)쯤에
+있었고 그보다 쉽다고 주장하는 글은 (-10, 0)쯤에 있었다. 방향만 달라질 뿐, 거리는
+좁혀지지 않는 느낌이었다. 그래도 그나마 알아들을만 했던 예제는 <a target="_blank" rel="noopener" href="http://fsharpforfunandprofit.com/posts/recipe-part2/">Railway oriented
+Programming</a>이었다.</p>
+<p><img src="/images/wtf-3-fam/1.png" alt=""></p>
+<p>Just에 어떤 연산<code>bind</code>을 할 때 결과는 다시 Maybe가 되어야 하니 Just(그림에서의
+Success) 혹은 Nothing(그림에서의 Failure) 둘 중 하나가 된다.</p>
+<p><img src="/images/wtf-3-fam/2.png" alt=""></p>
+<p>그런 연산이 여러 개 존재할 수 있다.</p>
+<p><img src="/images/wtf-3-fam/3.png" alt=""></p>
+<p>그때, 앞에서 어떤 처리들이 있었고 어디에서 Nothing으로 갔는지 관계없이 현재
+들어온 값을 보고 Just인지 Nothing인지 구분(switch)해주는 하나의 블럭을 만들기만
+하면 된다.</p>
+<p><img src="/images/wtf-3-fam/4.png" alt=""></p>
+<p>한번 Nothing이 되면 그 뒤에 어떤 연산이 오든 관계없이 Nothing으로 계속
+유지된다. 앞의 어디에서 Nothing이 되었다는 것에 신경 쓰지 않고 현재의 값만 보고
+Just인지 Nothing인지 연결하면 된다.  즉, <code>bind</code>(혹은 <code>flatMap</code>)에서는 현재 값과
+앞뒤 타입만 맞추면 입력에서 출력까지 연산이 안전하다고 보장된다.</p>
+<p>패턴이라는 것은 약속이고, 약속이라는 것은 그것이 보장된다는 말이다. 즉 일종의
+추상화로 블랙박스 모델처럼 그림에서의 스위치만 구현해서 레일을 연결하면 안전하게
+연산이 잘 흘러간다. OOP처럼 객체 단위의 추상화가 없으니 타입클래스에서 이런
+패턴들이 그 역할을 대신하고, 덕분에 재사용하기 좋고 확장 가능해진다. 그런 것들의
+기초가 되기 때문에 사람들이 중요하다고 많이 이야기하는 것이라고 생각한다.</p>
+<hr>
+<p>여전히 이게 뭐다라고 정의내려서 설명하기는 어렵지만 이제 A가 B다라는 말에서 그게
+맞거나 틀리다는걸 구분할 수는 있는 것 같다. 사실 이 글을 쓰게 된 목적 중 하나는
+이거다. 그동안 함수형 언어를 기껏해야 퀴즈 몇개 풀어보는 정도 이외에는 제대로
+써본 적이 없다보니 알듯말듯 한 상태가 몇년째 계속되고 있는데, 최근에 Haskell 책
+한권을 읽으면서 그 감이 약간 더 구체화된 김에 정리를 해서 더 잡기 위해서다. 물론
+조금 어긋난 내용이 있을 수도 있고 아예 잘못된 내용이 있을 수 있어서 언젠가 이
+글을 읽고 이불킥할지도 모르겠지만, 이번 기회에 정리하지 않으면 몇년 더 이해할
+기회가 오지 않을 것같다는 느낌이 들었다. 그러니 틀린게 있으면 틀린거고, 아니면
+좋고. 이제 Monad라는게 뭔지 대충 정리를 해밨으니 이걸로 뭘 할 수 있는지 한번
+써먹어보자.</p>
+<p>ps, 타입을 유지하기 위한 연산의 패턴들에 대해서 알아봤는데 이런 것들이 타입론
+(Type Theory)이나 범주론(Category Theory)에 속한 것이라면, &quot;정수의 덧셈은 정수에
+'닫혀있다'&quot;라고 말하는 것처럼 연산 자체의 성질에 대해서 논하는 군론(Group
+Theory)라는 것이 있고 그 중 모노이드(Monoid)라는 개념을 모나드와 함께 사용하면
+더 편하게 사용할 수 있는데 그 부분에 대해서는 지금보다 아는 것이 좀 더 생기면
+다뤄보고 싶다.</p>
+<p>ps2, 다시 말하지만 ps도 맞는지 확신이 없다.</p>
+<hr>
+<p>Reference</p>
+<ul>
+<li>
+<p>Hackage: Official Haskell Package archive</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://hackage.haskell.org/package/base-4.8.1.0/docs/Control-Monad.html">Control.Monad</a></li>
+<li><a target="_blank" rel="noopener" href="http://hackage.haskell.org/package/base-4.8.1.0/docs/Control-Applicative.html">Control.Applicative</a></li>
+<li><a target="_blank" rel="noopener" href="http://hackage.haskell.org/package/base-4.8.1.0/docs/src/GHC.Base.html">GHC.Base | Source</a></li>
+</ul>
+</li>
+<li>
+<p>Codewars Kata</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.codewars.com/kata/monads-the-maybe-monad">Monads: The Maybe Monad</a>
+: Maybe = Just | Nothing</li>
+</ul>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html">Functors, Applicatives, And Monads In Pictures</a> (<a target="_blank" rel="noopener" href="http://netpyoung.github.io/external/functors_applicatives_and_monads_in_pictures/">번역</a>)</p>
+</li>
+<li>
+<p>All Image Credit under <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>
+by <a target="_blank" rel="noopener" href="https://twitter.com/ScottWlaschin">ScottWlaschin</a></p>
+<ul>
+<li>from <a target="_blank" rel="noopener" href="http://fsharpforfunandprofit.com/posts/recipe-part2/">Railway oriented programming</a></li>
+</ul>
+</li>
+</ul>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/functional/" class="post__tag__link">functional</a></li><li class="post__tag__item"><a href="/tags/monad/" class="post__tag__link">monad</a></li><li class="post__tag__item"><a href="/tags/functor/" class="post__tag__link">functor</a></li><li class="post__tag__item"><a href="/tags/applicative/" class="post__tag__link">applicative</a></li></ul><a href="/2015/08/04/wtf-3-fam/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article><article class="post"><header class="post__head"><time datetime="2015-05-28T00:39:49.000Z" class="post__time">May 28, 2015</time><h1 class="post__title"><a href="/2015/05/28/callback-to-future-functor-applicative-monad/">Callback에서 Future로(그리고 Functor, Monad)</a></h1></header><div class="post__main echo"><blockquote>
+<h3>Translation of &quot;<a target="_blank" rel="noopener" href="http://tech.pro/blog/6742/callback-to-future-functor-applicative-monad">From callback to (Future -&gt; Functor -&gt; Monad)</a>&quot; into Korean, under the same license as the original.</h3>
+</blockquote>
+<h2>동기</h2>
+<p>함수형 프로그래밍에서 기본개념은 <strong>조합(composition)</strong> 이다. 간단히 설명해서, 단순한 것들을 엮어서 더
+복잡한 것을 만들 수 있고 그 결과를 다시 엮어서 더 복잡한 것을 만들 수도 있다. 함수의 의미나 리턴값이
+무엇인지만 알고 있으면 조합으로 무엇이든 만들어낼 수 있다.</p>
+<p>Node.js를 써봤으면 아래와 같은코드를 본 적이 있을 것이다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fs.readFile(<span class="string">&#x27;...&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (err) <span class="keyword">throw</span> err;</span><br><span class="line">  ....</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>위의 코드는 전형적인 CPS(continuation-passing style) 함수이다. <code>fs.readFile</code>이라는 CPS
+함수는 계속(continuation) 진행될 콜백을 추가 파라미터로 받는다. 이 CPS가 끝나면 호출한 곳에 값을
+반환하는게 아니라 계속 함수, 콜백에 계산 결과를 넘겨준다.</p>
+<p>나는 콜백을 쓰는걸 꺼리진 않는다. 사실 콜백은 부수효과를 표현하거나 이벤트 알림같은 것을 다룰 때
+훌륭하다. 그렇지만 그걸로 흐름을 관리하기 시작하면 함정에 빠진 것이다. 왜냐면 조합할 수 없기 때문에.</p>
+<p>자, 생각해보자. &quot;위에 나온 함수의 **표기(denotation)**나 리턴값은 무슨 의미일까?&quot; 답은
+<code>undefined</code>이다. undefined라는건 테스트할 때 실제로 undefined인지 확인하는 용도 이외에는 쓸
+데가 없다.</p>
+<p>콜백 안에서 다른 실행 흐름으로 넘어갈 때 일방통행이라는게 문제다.</p>
+<p>물리학에서 유명한 블랙홀처럼 콜백을 생각해보자:</p>
+<blockquote>
+<p>블랙홀은 수학적으로 정의된 지역이다. 강한 인력이 작용하거나, 어떤 티끌이나 전자기적 파장조차
+빠져나갈 수 없는</p>
+</blockquote>
+<p>그 중에서도</p>
+<blockquote>
+<p>어떤 빛도 반사하지 않는 등 블랙홀은 많은 부분에서 이상적인 검은 물체처럼 작용한다.</p>
+</blockquote>
+<p>콜백 함수 또한 흐름에서의 어떤 것도 반사하지 못한다.</p>
+<p>나중에 첫번째 콜백에 들어갈 때 다른 콜백 스타일 함수를 쓸 수 있는데, 그때는 두번째 <strong>흐름</strong>을 잃게
+되고 다른 구멍에 빠지게 된다. 콜백을 쓰면 쓸 수록 지옥에 빠지게 된다.</p>
+<p>그럼 블랙홀에 빠지지 않고 코드를 진행할 수는 없을까?</p>
+<p>답은 <strong>조합</strong>이다. 하지만 조합을 사용하려면 일단 CPS 함수가 어디로도 돌아갈 수 없다는 사실을
+알아야하고, 함수로부터 뭔가를 받아와야한다. 그러니 어떻게든 함수가 뭔가를 반환하게 만들어야한다. 어떤
+값이 반환될까? 이게 이 글의 동기이다.</p>
+<p>이미 자바스크립트에서의 해답을 알고 있을 수 있다. 하지만 계속 이 글을 읽도록, 강하게, 추천한다.
+지시적인(즉 함수형) 생각의 힘을 보게 될 것이고, 깔끔하고 간결한 해답을 어떻게 사용할지 보게 될 것이다.</p>
+<h2>future로 입문</h2>
+<p>파일 읽기, 네트워크 요청, DOM 이벤트, 이런 함수들의 공통점은 뭘까?</p>
+<p>이 함수들은 <em>즉시</em> 완료되지 않는 것들이다. 즉, (보통 함수들을 다루는 식으로는) 현재 프로그램
+흐름에서 저 함수들이 완료될 때까지 기다릴 수 없다는 뜻이다. 그래서 _future_를 설명할 것이다.</p>
+<p>그래서 특별한 반환 타입, 나중에 결과를 만들어준다고 명시하는 <code>Future</code>를 만들어보자. 요점은 다른
+함수들로 넘길 수 있는 1등급 클래스 값을 사용하는 것이다.</p>
+<p>Future는 무슨 의미일까? 특정 시간(0이 될 수도 있다) 후에 발생할 것이라고 명시해놓은 값이다.
+그 시간은 우리가 x초 후라고 말하는 것처럼 명시적인 시간이 될 수도 있지만, Future 2개가 완료된 후
+혹은 Future 하나가 완료된 뒤 다른 Future 완료될 때처럼 상대적인 개념일 수도 있다.</p>
+<p>여기서 중요한 점은: <strong>Future의 결과는 항상 불변값이다.</strong></p>
+<p>즉, 완료 값을 어떤 방법으로든 변경할 수 없다. 이 제약으로 구현 뿐만 아니라 의미론에 대한 추론도
+간단해진다.</p>
+<p>Future는 일회용의 간단한 상태머신처럼 구현될 수 있다. 이 머신은 <em>대기</em> 로 시작했다가 <em>완료</em> 가 된
+후에 멈춘다. 한번 완료되면 계속 완료상태에 고정된다.</p>
+<p>내부적으로 <code>Future</code>는 콜백에 여전히 의존하고 있지만, 그 콜백들이 컨트롤 흐름 매커니즘을 방해하지는
+않는다. 대신 올바른 목적으로만 사용된다, 이벤트 알림.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Future</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 대기중인 구독들을 저장하는 리스트</span></span><br><span class="line">  <span class="built_in">this</span>.slots = [];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 완료를 알린다</span></span><br><span class="line">Future.prototype.ready = <span class="function"><span class="keyword">function</span>(<span class="params">slot</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">this</span>.completed) slot(<span class="built_in">this</span>.value);</span><br><span class="line">  <span class="keyword">else</span> <span class="built_in">this</span>.slots.push(slot);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 간단한 로그 유틸리티</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">logF</span>(<span class="params">f</span>) </span>&#123;</span><br><span class="line">  f.ready( <span class="function"><span class="params">v</span> =&gt;</span> <span class="built_in">console</span>.log(v) );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Future를 완료시키는 외부 인터페이스로 메소드가 있다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.complete = <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 불변성 보장</span></span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">this</span>.completed)</span><br><span class="line">    <span class="keyword">throw</span> <span class="string">&quot;이미 완료된 Future는 완료시킬 수 없다.&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">this</span>.value = val;</span><br><span class="line">  <span class="built_in">this</span>.completed = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 구독들에게 알림</span></span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>, len=<span class="built_in">this</span>.slots.length; i&lt; len; i++) &#123;</span><br><span class="line">    <span class="built_in">this</span>.slots[i](val);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 모두 실행되면 이제 필요없다.</span></span><br><span class="line">  <span class="built_in">this</span>.slots = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Future의 가장 간단한 예제로 어떤 값으로 <em>즉시</em> 완료시켜보자. 그 역할을 <code>unit</code>이란 메소드를
+만들어보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// unit: Value -&gt; Future&lt;Value&gt;</span></span><br><span class="line">Future.unit = <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line">  fut.complete(val);</span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">logF( Future.unit(<span class="string">&#x27;hi now&#x27;</span>) );</span><br></pre></td></tr></table></figure>
+<p>코드에 대해 간단히 설명하기 위해 <em>타입 표기(type annotation)</em> 를 사용했다.</p>
+<p><code>unit: Value -&gt; Future&lt;Value&gt;</code>를 풀어보면 1- <code>unit</code>은 함수고, 2- 제네릭 타입 <code>Value</code>를
+입력으로 받으며, 3- 제너릭 타입을 가진 <code>Future</code> 인스턴스를 리턴한다. 여기서 타입 정보는 중요하지
+않으므로 <code>Value</code>라는 제너릭은 신경쓰지 않아도 된다.</p>
+<p>다음 예제는 특정 시간이 지나고 완료되는 값이다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// delay: (Value, Number) -&gt; Future&lt;Value&gt;</span></span><br><span class="line">Future.delay = <span class="function"><span class="keyword">function</span>(<span class="params">v, millis</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> f = <span class="keyword">new</span> Future();</span><br><span class="line">  <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    f.complete(v);</span><br><span class="line">  &#125;, millis);</span><br><span class="line">  <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">logF( Future.delay(<span class="string">&#x27;안녕, 이건 5초 걸린다&#x27;</span>, <span class="number">5000</span>) );</span><br></pre></td></tr></table></figure>
+<p><code>delay</code>의 결과는 주어진 값만큼의 시간이 지난 뒤에 완료되는 Future다.</p>
+<p>readFile 예제로 돌아가서, 이제 CPS 함수 대신에 Future를 리턴하는 함수를 사용할 수 있다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// readFileF: (String, Object) -&gt; Future&lt;String&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readFileF</span>(<span class="params">file, options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> f = <span class="keyword">new</span> Future();</span><br><span class="line">  fs.readFile(file, options, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 에러는 잠시 후에 다루겠다</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    f.complete(data);</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">logF( readFileF(<span class="string">&#x27;test.txt&#x27;</span>, &#123;<span class="attr">encoding</span>: <span class="string">&#x27;utf8&#x27;</span>&#125;) );</span><br></pre></td></tr></table></figure>
+<p><code>readFileF</code>의 결과는 인자로 받은 파일 이름의 내용을 잡고 있는 Future가 된다.</p>
+<h2>Future 다루기: 첫번째 게스트</h2>
+<p><code>Future</code>를 결과적으로 함수의 결과를 잡고 있는 마법 상자처럼 생각할 수도 있다.</p>
+<p>뭔가 쓸모있는 것을 하려면 Future 타입에서 쓸모있는 연산들을 제공해야한다. 그러지 않는다면
+필요없이 또 다른 <code>undefined</code>를 만든 것과 다를 바 없다.</p>
+<p>그러면 어떤 연산을 Future에서 제공해야할까?</p>
+<p>Future 상자에서 잡고 있는 값에 어떤 연산을 하고 싶을 때 (function map을 줄인)<code>fmap</code>을 호출할
+것이다.</p>
+<p><code>fmap</code>의 예제를 보자. 여기서 Future는 텍스트 파일의 내용을 잡고 있고, 이 내용의 길이를 계산하려고
+한다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> textF = readFileF(<span class="string">&#x27;test.txt&#x27;</span>, &#123;<span class="attr">encoding</span>: <span class="string">&#x27;utf8&#x27;</span>&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// fmap: (Future&lt;String, (String -&gt; Number)&gt; -&gt; Future&lt;Number&gt;)</span></span><br><span class="line"><span class="keyword">var</span> lengthF = textF.fmap( <span class="function"><span class="params">text</span> =&gt;</span> text.length );</span><br><span class="line">logF( lengthF );</span><br></pre></td></tr></table></figure>
+<p><code>lengthF</code>의 뜻은 인자로 받은 Future가 잡고 있는 파일 내용의 길이를 잡고 있는 Future다.</p>
+<p>일반화를 해보자면, <code>fmap</code>은 인자를 둘 받는데, 하나는 값을 잡고 있는 Future고 하나는 일반값을
+다루는 매핑 함수다. 입력으로 받은 Future의 결과물에 매핑 함수를 적용한 결과를 잡고 이는 Future가
+결과로 나온다. 받은 Future와 결과 Future는 둘 다 동시에 완료된다.</p>
+<p>정확하진 않지만, 이렇게 표현할 수 있다</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmap( Future&lt;value&gt;, func ) = Future&lt; func(value) &gt;</span><br></pre></td></tr></table></figure>
+<p><code>fmap</code>은 몇줄만으로 구현할 수 있다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.fmap = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line">  <span class="built_in">this</span>.ready(<span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">    fut.complete( fn(val) );</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>현재 Future가 완료되었을 때 결과로 나온 Future도 완료된다. 그 때 매핑 함수를 적용시킨다.</p>
+<p>위의 예제에서는, 파일 내용을 잡고 있는 Future를 내용 길이를 잡고 있는 다른 Future로 변이시켰다.</p>
+<p>어디서 들어본 말 같지 않은가? 잘 알고 있는 자바스크립트 Array의 <code>map</code> 메소드와 꽤 비슷하다.
+실제로 정확히 같은 개념이다.</p>
+<ul>
+<li>Array  타입은 여러 값들을 잡고 있는 박스다</li>
+<li>Future 타입은 완료될 값을 잡고 있는 박스다</li>
+<li>Array.map(...) 은 Array 박스 안의 값들을 변이시켜서, 변이된 값들을 잡고 있는 다른 Array 박스를 돌려준다</li>
+<li>Future.fmap(...)은 Future 박스 안의 값을 변이시켜서, 변이된 값을 잡고 있는 다른 Future 박스를 돌려준다</li>
+</ul>
+<p>Array와 Future 타입 둘 모두 포함되는 <strong>Functor</strong>라는 첫번째 게스트가 등장했다. 일반 함수를 하나
+받아서 안에 무엇을 가지고 있든 그것이 변이된 결과를 표현하는 다른 인스턴스를 만들어내는 타입이다.</p>
+<ul>
+<li>다른 타입을 감싸는 컨텍스트처럼 작동할 수 있는 타입이고</li>
+<li>내부에 있는 것을 일반 함수에 적용시킬 수 있다면</li>
+</ul>
+<p>Array와 Future가 아니더라도 그게 무엇이든간에 그 타입을 <strong>Functor</strong>라고 부를 수 있다.</p>
+<p>이제 Future를 다른 Future로 매핑할 수 있다. 이제 일반값을 다루듯이 Future를 직접적으로 다루는
+함수를 만들 수 있다는 뜻이다. <code>textF.fmap( c =&gt; c.length )</code>처럼 호출하는 대신에 Future를
+직접 다루는 <code>lengthF</code>라는 특별한 종류의 함수를 만들 수도 있다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// lengthF: Future&lt;String&gt; -&gt; Future&lt;Number&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">lengthF</span>(<span class="params">strF</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> strF.fmap( <span class="function"><span class="params">s</span> =&gt;</span> s.length )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>파일 길이를 읽는 예제를 흔히 보던 방법처럼 다시 작성할 수 있게 되었다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nbCharsF = lengthF( readFileF(<span class="string">&#x27;...&#x27;</span>) )</span><br></pre></td></tr></table></figure>
+<p><code>lengthF</code>를 <em>lift된</em> 함수라고 부른다. Functor같은 _박스 타입_을 다루는 함수를 <strong>lift</strong>한다는
+것은 일반값을 다루는 함수를 박스 타입을 다루는 함수로 만든다는 뜻이다. 여기에서는 문자열을 다루는 함수
+<code>length(String)</code>를 lift해서 Future를 다루는 함수<code>lengthF( Future&lt;String&gt; )</code>로 lift했다.</p>
+<p>일반화된 <code>lift1</code>(인자를 하나만 받아서 lift하는 함수)를 정의해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Future.lift1 = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">fut</span> =&gt;</span> fut.fmap(fn);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>비동기 실행을 일반 함수 실행처럼 만들어주는 간단한 추상 함수다. 위에서 <code>lengthF( readFileF('...') )</code>는
+<code>readFileF</code>와 <code>lengthF</code>를 조합해서 비동기 연산을 현재의 흐름을 떠나지 않고 실행할 수 있다.</p>
+<h2>인자를 여러개 받는 함수는 어떻게? (두번째 게스트?)</h2>
+<p>질문에 대답하기 전에 잠시 기초지식에 대해 생각해보자: Future 박스가 잡을 수 있는 타입에는 뭐가
+있을까? Future는 모든 타입에 대해 같은 의미를 가질까?</p>
+<p><code>Future&lt;String&gt;</code>의 뜻은 명확하다: 시간이 지난 뒤에 문자열 타입의 값이 발생한다는 뜻이다. 다른
+타입들에 이 의미를 확장할 수 있을까? 숫자, 객체, 배열? 그럴듯... 그럼 Future 자체에 대해서는
+어떨까? <code>Future&lt;Future&gt;</code>는 무슨 뜻일까? 그러니까 Future의 Future는?</p>
+<p>보고 바로 이해할 수 있도록, 디렉토리를 보고 첫번째 파일의 내용을 읽는 간단한 예제를 만들어보자
+(간단히 생각하기 위해 내부에 다른 디렉토리가 없다고 가정한다).</p>
+<p>Node.js에서는 비동기 함수 <code>fs.readdir</code>을 통해 디렉토리 속 파일들 이름의 배열을 가져올 수 있다.
+먼저 이걸 Future식 함수로 만들어보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// readDirF: String -&gt; Future&lt; Array&lt;String&gt; &gt;</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readDirF</span>(<span class="params">path</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> f = <span class="keyword">new</span> Future();</span><br><span class="line">  fs.readdir(path, <span class="function">(<span class="params">err, files</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 기다리면 곧 실행된다</span></span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    f.complete(files);</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>readDirF</code>는 디렉토리 내 파일 이름들의 배열을 기다리는 Future를 뜻한다.</p>
+<p>위에서 말한걸 구현하려면 필요한 나머지는</p>
+<ol>
+<li>Future가 잡고 있는 파일 이름들의 배열을 기다린다.</li>
+<li>첫번째 파일명을 가져온다.</li>
+</ol>
+<p>여기서 <code>fmap</code>을 사용할 수 있을까? Node에서 이걸 실행해보자</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> resultF = readDirF(<span class="string">&quot;testdir&quot;</span>).fmap( <span class="function"><span class="params">files</span> =&gt;</span> readFileF( files[<span class="number">0</span>]) )</span><br><span class="line">logF( resultF )</span><br></pre></td></tr></table></figure>
+<p>기다리면... 아차</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; <span class="attr">slots</span>: [] &#125;</span><br></pre></td></tr></table></figure>
+<p>확실히 뭔가 잘못됐다. 콘솔에서 파일 내용이 나오는게 아니라 Future 인스턴스 객체의 내용이 나왔다.</p>
+<p>왜냐면 <code>fmap</code>은 매핑 함수의 결과가 무엇이든 받아서 그걸 Future로 잡아 돌려주기 때문이다. 위에서의
+매핑 함수는 또다른 Future(<code>readFileF</code>의 결과)를 <code>fmap</code>은 그 Future를 잡는 Future를 만들어
+<code>resultF</code>에 보내기만 한다.</p>
+<p>하지만 Future는 잡고 있는 Future와 함께 끝나는지 않으므로, <em>속에 있는</em> Future가 완료될 때까지
+계속 기다릴 뿐이다.</p>
+<p>그래서 이럴 때 필요한 함수를 만들어보자. Future를 리턴하고 끝내는 대신에 속에 있는 Future가 끝날
+때까지 기다리는 함수다.</p>
+<p>(이중 Future)Future<Future>를 그냥 Future로 만들어주는 <code>flatten</code>를 만들어보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// flatten: Future&lt; Future&lt;Value&gt; &gt; -&gt; Future&lt;Value&gt;</span></span><br><span class="line">Future.prototype.flatten = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line">  <span class="built_in">this</span>.ready(<span class="function"><span class="keyword">function</span>(<span class="params">fut2</span>) </span>&#123;</span><br><span class="line">    fut2.ready( <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">      fut.complete(val);</span><br><span class="line">    &#125; );</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이렇게 하면 원하는 결과를 얻을 수 있다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> result = readDirF(<span class="string">&quot;testdir&quot;</span>)</span><br><span class="line">              .fmap( <span class="function"><span class="params">files</span> =&gt;</span> readFileF(files[<span class="number">0</span>], &#123;<span class="attr">encoding</span>: <span class="string">&#x27;utf8&#x27;</span>&#125;) )</span><br><span class="line">logF( result.flatten() )</span><br></pre></td></tr></table></figure>
+<p><code>fmap</code>과 <code>flatten</code>을 따로 부르는 대신에 한번에 부를 수 있게 합쳐보자: 매핑 함수에서 나온 2중
+Future를 압축(flatten)하는 두가지 일을 한다. 하는 일 그대로 <code>flatMap</code>이라고 하자
+(좀 이상한건 나도 안다).</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.flatMap = <span class="function"><span class="keyword">function</span>(<span class="params"> fn </span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>.fmap(fn).flatten();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>개념상으로는 위에서 독립적인 두 연산을 _이어서_하는 것인데, <code>readDirF</code>에서 나오는 파일 이름의
+배열을 <code>readFileF</code>에 넘겨준다.</p>
+<p>여기에서 두번째 게스트가 등장하는데, Future를 Functor라고 부를 수 있는 것처럼 <strong>Monad</strong>라고 부를
+수도 있다. 순서대로 연산할 수 있는 방법에 대한 개념이다. 위에서 <code>flatMap</code>에서처럼, 이전 단계에서의
+결과를 다음 단계로 넘겨서 여러 함수를 연이어 연산할 수 있다.</p>
+<p>Functor처럼 Monad도 많은 사용법이 있는데, 기술적으로 모든 모나드는 다음을 만족한다.</p>
+<ul>
+<li>일반값을 <em>Monad식(Monoadic) 값</em> 으로 lift하는 방법: 예를 들어, <code>Future.unit</code>은 일반값을 Future로 만든다.</li>
+<li>연이은 연산 2개를 이어서 실행하는 방법: Monad는 연산을 이어서 실행하게 해주는 방법이 포함된다. 위에서 <code>flatMap</code>은 그냥 Future 하나만 만들고 다음으로 넘어가는게 아니라, 앞의 Future가 끝날 때까지 기다렸다가 넘어가는 방법이 들어있다.</li>
+</ul>
+<p>위에서 2개의 다른 연산(<code>fmap</code>과 <code>flatten</code>)으로 두번째 인터페이스(<code>flatMap</code>)를 만들 수 있다는
+것을 확인했다. fmap 함수를 정의하는 Functor라면 이중 구조를 단순화시켜서 합치는(flatten) 연산이
+필요해진다.</p>
+<p>이제 처음의 질문으로 돌아가보자, Future들 여러개를 받는 함수를 어떻게 lift할 수 있을까?</p>
+<p>다시 파일 예제로 돌아가서, 디렉토리의 모든 파일 내용을 합치려면 이런 코드가 될 것이다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// concatF: (Future&lt;String, ...) -&gt; Future&lt;String&gt;</span></span><br><span class="line"><span class="keyword">var</span> resultF = concatF( text1F, text2F, ...)</span><br></pre></td></tr></table></figure>
+<p>이건 무슨 뜻일까? 입력받은 Future들이 잡고 있는 각 문자열들을 합친 것을 다시 잡고 있는 Future를
+만들어준다. <code>concatF</code>는 입력받은 모든 Future들이 순서대로 처리되도록 기다려야하므로 결과로 나온
+Future는 입력받은 모든 Future가 완료될 때 완료된다.</p>
+<p>인자 2개를 받는 경우부터 시작해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fn: (Value, Value) -&gt; Value</span></span><br><span class="line"><span class="comment">// lift2: ( (Value, Value) -&gt; Value ) -&gt; ( (Future, Future) -&gt; Future )</span></span><br><span class="line">Future.lift2 = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">fut1, fut2</span>) =&gt;</span> &#123;</span><br><span class="line">    fut1.flatMap( <span class="function"><span class="params">value1</span> =&gt;</span> </span><br><span class="line">      fut2.flatMap( <span class="function"><span class="params">value2</span> =&gt;</span></span><br><span class="line">        Future.unit( fn(value1, value2) );</span><br><span class="line">      )</span><br><span class="line">    )</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>보이는 것과는 별개로 코드의 로직은 꽤 간단하다. 한줄씩 읽어보자면:</p>
+<ul>
+<li><code>Future.lift2</code>는 &quot;일반값 2개를 다루는 함수&quot;를 받아서 &quot;Future 2개를 다루는 함수&quot;를 리턴한다.</li>
+<li>리턴된 (lift된) 함수가 실제로 하는 일은
+<ul>
+<li>(중첩되어 실행되는) 2개의 연산을 순서대로 <code>flatMap</code>에 넣고</li>
+<li>첫번째 연산은 그 자체로 하는게 없지만 <code>value1</code>을 바인딩해서 스코프에 묶어두는 역할을 하고</li>
+<li>두번째로 중첩된 연산은 <code>value1</code>과 <code>value2</code>를 <code>fn</code>에 넘긴다.</li>
+<li><code>fn</code>은 일반값을 리턴하는데 <code>flatMap</code>은 받은 함수가 Future를 리턴해야하므로 <code>Future.unit</code>을 통해 일반값을 Future로 lift한다.</li>
+</ul>
+</li>
+</ul>
+<p>이게 트릭이다: 모든 Future에서 순차적으로 <code>flatMap</code>을 실행해서 모두 끝나길 기다린 다음에 모든
+완료값이 한 스코프에 모였을 때 함수를 실행한다.</p>
+<p><code>readDir</code> 내부에서 <code>readFile</code>를 실행하는 것처럼 순차 연산으로 설명되는 <em>Monadic</em> 값과는 다르게
+여러 인자를 한번에 lift하도록 마지막에 <code>Future.unit</code>를 사용했다.</p>
+<p>파일 2개의 내용을 합치기 위한 예제다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> concat2 = Future.lift2( <span class="function">(<span class="params">str1, str2</span>) =&gt;</span> str1+<span class="string">&#x27; &#x27;</span>+str2 );</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> text1 = readFileF(<span class="string">&#x27;test1.txt&#x27;</span>, &#123;<span class="attr">encoding</span>: <span class="string">&#x27;utf8&#x27;</span>&#125;);</span><br><span class="line"><span class="keyword">var</span> text2 = readFileF(<span class="string">&#x27;test2.txt&#x27;</span>, &#123;<span class="attr">encoding</span>: <span class="string">&#x27;utf8&#x27;</span>&#125;);</span><br><span class="line"></span><br><span class="line">logF( concat2(text1, text2) );</span><br></pre></td></tr></table></figure>
+<p>두번째 Future <code>text2</code>가 첫번째의 <code>text1</code>보다 먼저 끝나더라도 <code>text1</code>을 기다리게 되고,
+<code>text1</code>이 끝나면 <code>text2</code>는 이미 끝났으므로 바로 함수를 실행한다.</p>
+<p>여러 인자를 받는 함수는, 입력들이 언제 끝나는지나 의존성과는 관련없다는 것을 알 수 있다.
+이걸 정리하면 다음과 같다.</p>
+<ul>
+<li><code>fmap</code>이 하나의 연산을 실행하고</li>
+<li><code>flatMap</code>은 순차 연산을 실행하지만</li>
+<li>여러 인자를 lift하는 함수는 <em>병렬</em> 실행이다.</li>
+</ul>
+<p>위에서 봤듯이, Future들을 한번에 실행하고 연산이 진행되기 전에 이미 그 결과를 기다리고 있다.</p>
+<p><code>lift2</code>의 패턴을 <code>lift3</code>이나 <code>lift4</code>로 쉽게 확장할 수 있지만, 인자의 갯수와 관계없이 위에서
+나온 중첩과 스코프를 통해 일반화를 구현해볼 것이다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">toArray</span>(<span class="params">args</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">Array</span>.prototype.slice.call(args);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Future.lift = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> futArgs = toArray(<span class="built_in">arguments</span>), <span class="comment">// Future 인자들</span></span><br><span class="line">        ctx = <span class="built_in">this</span>; <span class="comment">// 컨텍스트(`this`)를 저장</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> bindArg(<span class="number">0</span>, []);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">bindArg</span>(<span class="params">index, valArgs</span>) </span>&#123;</span><br><span class="line">      <span class="comment">// 현재 Future 인자를 기다린다</span></span><br><span class="line">      <span class="keyword">return</span> futArgs[index].flatMap(<span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">        valArgs = valArgs.concat(val); <span class="comment">// 완료값들을 모은다.</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> (idnex &lt; futArgs.length - <span class="number">1</span>) ? <span class="comment">// 아직 마지막 Future 인자가 아니라면</span></span><br><span class="line">          bindArg(index+<span class="number">1</span>, valArgs) : <span class="comment">// 다음 인자를 flatMap에 넘기고 기다린다</span></span><br><span class="line">          Future.unit( fn.apply(ctx, valArgs) ); <span class="comment">// 끝까지 오면 모은 완료값들을 함수에 넘긴다</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>lift</code>에서는 <code>lift2</code>의 패턴을 재활용했다. 인자가 몇개 들어올지 정확히 모르니 재귀를 통해 전체를
+순회(iterate)하고, 완료를 기다렸다가 결과를 계속 넘겨서 모은다.(<code>index</code>번째의 Future를
+기다렸다가 완료값을 저장하고, 모든 입력이 완료될 때까지 다음 Future 입력에 이 연산을 반복한다.)
+마지막 Future까지 오면 함수를 실행하고 결과를 lift해서 리턴한다.</p>
+<p>노트: 'Applicative Functor'라는 자료구조를 통해 n개 인자를 lift하도록 구현할 수 있지만,
+그러려면 람다나 커리에 대한 설명을 해야하므로 오늘은 일단 생략하자.</p>
+<h2>에러 처리</h2>
+<p>위에서 <code>fs.readFile</code>의 에러값을 어떻게 뒀는지 다시 확인해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readFileF</span>(<span class="params">file, options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> f = <span class="keyword">new</span> Future();</span><br><span class="line">  fs.readFile(file, options, <span class="function"><span class="keyword">function</span>(<span class="params">err, data</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="keyword">throw</span> err;</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>실제로 작동하지 않는 코드다. 프로그램 흐름에서 떨어져서 실행중이므로 발생하는 에러를 잡을 방법이 없다.
+위의 상황에서 에러는 상위로 전파되며 잡는 핸들러가 없어서 Node.js 전체 프로그램을 중단시킨다.</p>
+<p>에러를 잡아 흐름을 고치려고 한다거나 의미있는 메시지를 사용자에게 전달하는게 필요할 수도 있다.</p>
+<p>가능한 방법으로는 <code>Future</code>에 <em>실패</em> 의 개념을 붙여서 의미를 확장하는 것이 있다. 아직까지는 Future의
+결과에 어떤 의미를 붙이지는 않았지만, 가능한 2가지 결과(완료 혹은 실패)로 Future를 생각해볼 수도 있다.
+실패에 대한 경우가 포함되었는지 확인해보자.</p>
+<p>먼저, 완료를 알리는 <code>ready</code> 메소드가 있으니 실패를 알리는 메소드를 정의해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Future</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">this</span>.slots = [];</span><br><span class="line">  <span class="built_in">this</span>.failslots = [];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Future.prototype.failed = <span class="function"><span class="keyword">function</span>(<span class="params">slot</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">this</span>.hasFailed) slot(<span class="built_in">this</span>.error);</span><br><span class="line">  <span class="keyword">else</span> <span class="built_in">this</span>.failslots.push(slot);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Future가 실패할 때의 메소드도 정의해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.fail = <span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">this</span>.completed || <span class="built_in">this</span>.hasFailed)</span><br><span class="line">    <span class="keyword">throw</span> <span class="string">&quot;이미 끝난 Future를 실패할 수는 없다!&quot;</span></span><br><span class="line">  <span class="built_in">this</span>.hasFailed = <span class="literal">true</span>;</span><br><span class="line">  <span class="built_in">this</span>.error = err;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>, len=<span class="built_in">this</span>.failslots.length ; i&lt;len ; i++) &#123;</span><br><span class="line">    <span class="built_in">this</span>.failslots[i](err);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>이제 <code>fmap</code>를 다시 생각해보자.</p>
+<p><code>readFileF(...).fmap( s =&gt; s.length)</code> 예제에서 파일이 없을 때에 대한 처리가 없다.
+제대로 읽었을 때에 대해서만 변환하기 때문에 아닐 때는 에러와 함께 실패할 것이다. 혹시 변환 중 실패할
+경우에도 실패해야한다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.fmap = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line">  <span class="built_in">this</span>.ready( <span class="function"><span class="params">val</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">try</span>        &#123; fut.complete( fn(val) ); &#125;</span><br><span class="line">    <span class="keyword">catch</span>(err) &#123; fut.fail(err); &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="built_in">this</span>.failed( <span class="function"><span class="params">err</span> =&gt;</span> fut.fail(err) );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>flatten</code>은 약간 복잡하다. 안쪽과 바깥쪽의 Future 2개가 있고, 각각 완료될 수도 실패할 수도 있다.
+그래서 4가지(2x2) 경우를 다뤄야한다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.flatten = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 1- 밖깥 실패 안쪽 실패 =&gt; 결과 실패</span></span><br><span class="line">  <span class="comment">// 2- 바깥 실패 안쪽 완료 =&gt; 결과 실패</span></span><br><span class="line">  <span class="built_in">this</span>.failed( <span class="function"><span class="params">_</span> =&gt;</span> fut.fail(err) );</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 3- 바깥 완료 안쪽 실패 =&gt; 결과 실패</span></span><br><span class="line">  <span class="built_in">this</span>.ready( <span class="function"><span class="params">fut2</span> =&gt;</span></span><br><span class="line">    fut2.failed( <span class="function"><span class="params">err</span> =&gt;</span> fut.fail(err) );</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 4- 바깥 완료 안쪽 완료 =&gt; 결과 완료</span></span><br><span class="line">  <span class="built_in">this</span>.ready( <span class="function"><span class="params">fut2</span> =&gt;</span></span><br><span class="line">    fut2.ready( <span class="function"><span class="params">val</span> =&gt;</span> fut.complete(val) );</span><br><span class="line">  );</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>flatten</code>에서 안쪽과 바깥쪽 모두 완료되었을 때만 결과가 완료된다.</p>
+<p><code>flatMap</code>과 <code>lift</code>는 수정할 필요가 없다. 이미 <code>fmap</code>과 <code>flatten</code>의 의미를 가져오는 것이기
+때문에 자동으로 에러에 대한 의미가 추가된다.</p>
+<p>자, 이제 실패한 Future들은 연산에서 제외하게 만들었다. 그럼 실패한 Future들을 어떻게 다뤄야할까?</p>
+<p>Future 에러를 <em>잡아서</em> 고치면 된다. 어떻게? 실패한 Future를 완료값으로 변이시켜서 원래의 연산에
+포함시키면된다.</p>
+<p><code>fmap</code>과 비슷하지만 좌우반전같은 <code>fmapError</code> 함수를 만들 것이다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.fmapError = <span class="function"><span class="title">funciton</span>(<span class="params">fn</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line">  <span class="built_in">this</span>.ready( <span class="function"><span class="params">val</span> =&gt;</span> fut.complete(val) );</span><br><span class="line">  <span class="built_in">this</span>.failed( <span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">try</span>         &#123; fut.complete( fn(err) ); &#125;</span><br><span class="line">    <span class="keyword">catch</span>(err1) &#123; fut.fail(err1); &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>fmapError</code>는 <code>catch</code>문의 비동기 버전처럼 작동하며, 정상적으로 완료되면 그냥 값을 넘기고 에러가
+발생했을 때는 매핑 함수에 적용시켜서 완료값으로 넘긴다.</p>
+<p>간단히 예제를 만들어보자</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readFileF(<span class="string">&#x27;unknown file&#x27;</span>).fmapError( <span class="function"><span class="params">err</span> =&gt;</span> <span class="string">&#x27;alternate content&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>그럼 에러를 Monad식으로 파이프라인처럼 다음 연산으로 넘기려면?</p>
+<p><code>flatMap</code>의 좌우반전같은 <code>flatMapError</code>를 만들어보자</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.flatMapError = <span class="function"><span class="title">funciton</span>(<span class="params"> fn </span>)</span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="built_in">this</span>.fmapError(fn).flatten();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>예를 들어서 어떤 주소(URL)에서 내용을 가져오려고 할 때 요청이 실패한다면 다른 주소에서 가져오도록
+시도를 하려고 하는데, <code>flatMapError</code>을 사용해서 앞의 실패를 잡아서 다른 요청을 만들 수 있다.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">resultF = requestF(<span class="string">&#x27;/url1&#x27;</span>).flatMapError( <span class="function"><span class="params">err</span> =&gt;</span> requestF(<span class="string">&#x27;/url2&#x27;</span>) )</span><br></pre></td></tr></table></figure>
+<p><code>resultF</code>는 첫번째 요청이 성공할 때 <code>'url1'</code>의 내용을 잡고 있고, 실패할 때는 <code>'url2'</code>를
+요청해서 그 결과를 잡고 있다는 뜻이다.</p>
+<h2>부수효과</h2>
+<p>합성해서 연산할 수 있는 방법에 대해 필요한 것들을 모두 다뤄보았다. 지금까지 다뤘던 함수들을 통해서
+Future를 동기 연산을 할 때처럼 일반값으로 넘겨서 비동기 처리를 하게 해봈다.</p>
+<p>하지만 연산들은 끝까지 도달해야 결과가 나온다. 부수효과가 필요한 연산들을 다뤄 볼 시간이다. UI를
+업데이트한다거나 콘솔에 로그를 찍는다거나 데이터베이스에 저장을 한다거나.</p>
+<p><code>ready</code>와 <code>failed</code> 이벤트를 사용할 수도 있지만 좋은 방법은 아니라고 생각한다.</p>
+<p>실제 어플리케이션에서 한 Future가 여러 자식 Future들을 가지고 그 Future들은 또 자식 Future들을
+갖게 되는 트리같은 구조가 된다. Future하나가 완료돌 때 매핑된 Future들이 연쇄적으로 완료된다.</p>
+<p>Future의 <code>ready</code>알림을 통해서 부수효과를 실행하려고 한다면 트리 내부에 있는 Future들 전체에
+영향을 끼치게 된다. 의미적으로나 구현상으로나 업데이트가 끝날 때까지 부수효과 연산을 미뤄두는 것이 좋다.
+예를 들어 DOM을 업데이트할 때는 <code>requestAnimationFrame</code>같은 스케쥴러에 맡기는게 더 좋을 수도 있다.</p>
+<p>위에서 말한 이유로 <code>do</code>라는 메소드를 하나 만들텐데 부수효과 연산을 명시하는 것이다. <code>fmap</code>처럼
+부수효과 함수를 받겠지만, 내부의 알림들(<code>ready</code>와 <code>failed</code>)이 완료될 때까지 지연될 것이다.</p>
+<p>예를 들어</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requestF(<span class="string">&#x27;/url&#x27;</span>).do( <span class="function"><span class="params">val</span> =&gt;</span> <span class="comment">/* update ... */</span> )</span><br></pre></td></tr></table></figure>
+<p>이번에도 <em><code>do</code>의 의미와 리턴값이 무엇인지</em> 생각해보자.</p>
+<p>변이없이 그냥 Future를 리턴한다면 <code>future.fmap( Id )</code>(여기에서 <code>Id</code>는 <code>x =&gt; x</code> 같은 항등함수)
+와 같은 형태이다. <code>fmap</code>과 다른 점은, 먼저 <code>do</code>에서 부수효과가 발생한다는 점이고 두번째는 다른
+컨텍스트에서 실행된다는 점이다.(<code>fmap</code>은 즉시, <code>do</code>는 나중에). 가장 다른건 _의미_다.</p>
+<blockquote>
+<p>정정: 2015년 4월 6일. <code>Action</code>이라는 새로운 타입을 통해 <code>do</code>를 적용했는데, 굳이 Monad(Future)
+안에 다른 Monad(Action)을 넣어 복잡하게 만들 필요가 없었다. 서버에 데이터를 넘기거나 응답을
+기다리는 등의 상황에서 리턴값이 필요할 수도 있는데, 다음 글에 이걸 개발해 볼 수도 있다.</p>
+</blockquote>
+<p>빠르게 대충 구현해보자.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Future.prototype.do = <span class="function"><span class="title">funciton</span>(<span class="params">action</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">var</span> fut = <span class="keyword">new</span> Future();</span><br><span class="line">  <span class="keyword">if</span>(<span class="built_in">this</span>.completed) &#123;</span><br><span class="line">    action(<span class="built_in">this</span>.value);</span><br><span class="line">    fut.complete(<span class="built_in">this</span>.value);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.actions.push( <span class="function"><span class="params">val</span> =&gt;</span> &#123; </span><br><span class="line">      action(val);</span><br><span class="line">      fut.complete(val);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> fut;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Future.prototype.complete = <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">var</span> me = <span class="built_in">this</span>;</span><br><span class="line">  <span class="built_in">setTimeout</span>( <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>, len=me.actions.length ; i&lt;len; i++)</span><br><span class="line">      me.actions[i](val);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>덧붙여서, 비동기실행을 제대로 구현하려면 process.nextTick이나 MessageChannel 등을 사용해야
+하지만 여기서는 간단히 구현하고 넘어가자. 비슷하게, 부수효과의 실패에 대응해 <code>doError</code>도 만들어야
+하는데, <code>do</code>와 비슷하므로 각자 알아서 구현해보자. (<a target="_blank" rel="noopener" href="https://gist.github.com/yelouafi/40aeb2a70a368acb6e45">Gist에 코드 전체가 있다</a>)</p>
+<hr>
+<p>역주 1: Promise와의 비교는 Future/Functor/Monad 개념을 이해하는데 관계없다고 생각해서 생략했다.</p>
+<p>역주 2: <a target="_blank" rel="noopener" href="http://adit.io/posts/2013-04-17-functors,_applicatives,_and_monads_in_pictures.html">그림으로 설명하는 Functor, Applicative, Monad</a>(<a target="_blank" rel="noopener" href="http://netpyoung.github.io/external/functors_applicatives_and_monads_in_pictures/">번역</a>)과 함께 읽으면 이해하는데 도움이 될 것이다.</p>
+</div><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a href="/tags/translation/" class="post__tag__link">translation</a></li><li class="post__tag__item"><a href="/tags/monad/" class="post__tag__link">monad</a></li><li class="post__tag__item"><a href="/tags/functor/" class="post__tag__link">functor</a></li></ul><a href="/2015/05/28/callback-to-future-functor-applicative-monad/#disqus_thread" class="post__foot-link u-fr">0 COMMENTS</a></footer></article></main><footer class="foot"><div class="foot-copy u-fl">&copy; 2021 Seoh Char</div><menu class="page-menu u-fr"><li class="page-menu__item"><span title="Previous" class="page-menu__link icon-arrow-left page-menu__link--disabled"></span></li><li class="page-menu__item"><span title="Next" class="page-menu__link icon-arrow-right page-menu__link--disabled"></span></li></menu></footer></body></html>

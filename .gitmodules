@@ -1,0 +1,3 @@
+[submodule "themes/strict"]
+	path = themes/strict
+	url = git@github.com:unmric/hexo-theme-strict.git

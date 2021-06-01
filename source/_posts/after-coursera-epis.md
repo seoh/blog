@@ -16,7 +16,7 @@ if condition then
 else
   expression
 ```
-처럼 여러 줄의 표현식이 있을 때 중괄호없이 표기할 수 있게 되었다.
+처럼 여러 줄의 표현식이 있을 때 중괄호없이 표기하는 예시를 보여준다.
 
 
 ### imperative-loop - 2주차
